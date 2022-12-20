@@ -21,3 +21,4 @@ Route::resource('locations', 'App\Http\Controllers\LocationController');
 Route::resource('checkin', 'App\Http\Controllers\CheckinController');
 Route::resource('approval', 'App\Http\Controllers\ApprovalController');
 Route::resource('capacity','App\Http\Controllers\CapacityController');
+Route::resource('blackout', 'App\Http\Controllers\BlackoutController');

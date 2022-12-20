@@ -7,9 +7,11 @@
 
     <div class="card">
       <h5 class="card-header bg-success">
-        {{$location->location_name}} - Max Occupancy
+        {{$location->location_name}} Occupancy & Blackout Dates
       </h5>
       <div class="card-body">
+
+          <h5 class="text-primary">Daily Occupancy</h5>
 
         <table class="table table-bordered table-sm" style="font-size:12px;">
           <thead>
@@ -49,6 +51,48 @@
         </table>
 
 
+          <h5 class="text-danger">Blackout Dates</h5>
+
+          <table class="table table-bordered table-sm" style="font-size:12px;">
+              <thead>
+              <tr>
+
+                  <th>Day</th>
+                  <th>Action</th>
+
+
+              </tr>
+              </thead>
+              <tbody>
+              @foreach($blackoutdates as $day)
+                  <tr>
+
+
+                      <td>{{$day->closedate}}</td>
+
+                      <td>
+                          <form method="POST" action="{{route('blackout.destroy', $day->id)}}">
+                              @csrf
+                              @method('DELETE')
+                              <button class="btn btn-danger btn-sm" style="font-size:10px;">Delete</button>
+                          </form>
+
+                      </td>
+
+                  </tr>
+
+              @endforeach
+
+              </tbody>
+          </table>
+
+
+
+
+
+
+
+
 
 
 
@@ -66,6 +110,50 @@
 
 
   </div>
+</div>
+
+<div class="row">
+
+    <div class="col-sm-12 sm-5">
+
+        <div class="card">
+            <h5 class="card-header bg-success">
+                {{$location->location_name}}- Blackout Dates
+            </h5>
+            <div class="card-body">
+
+                <form method="POST" action="/blackout">
+                    @csrf
+
+                   <div class="form-group">
+                       <input name="location_id" hidden value={{$location->id}}>
+                       <label for="exampleFormControlInput1">Date:</label>
+                       <input name="blackoutdate"  class="form-control" id="datepicker" data-date-format="yyyy-mm-dd" required>
+
+
+                   </div>
+
+
+
+
+                    <div class="form-group">
+
+                        <button class="btn btn-primary">Submit</button>
+
+                    </div>
+                </form>
+
+
+
+
+            </div>
+            <div class="card-footer">
+
+            </div>
+        </div>
+
+
+    </div>
 </div>
 
 

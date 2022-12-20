@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\capacity;
 use App\Models\Closedate;
 use Illuminate\Http\Request;
-use App\Models\location;
 
-
-
-class CapacityController extends Controller
+class BlackoutController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,11 +14,6 @@ class CapacityController extends Controller
      */
     public function index()
     {
-        $locations = location::all();
-
-
-
-        return view('capacity.index')->with('locations',$locations);
         //
     }
 
@@ -44,21 +35,21 @@ class CapacityController extends Controller
      */
     public function store(Request $request)
     {
+        if (Closedate::where('location_id','=',$request->location_id)->where('closedate','=',$request->blackoutdate)->count() > 0) {
 
+            return redirect()->back()->with('danger','Date already exists');
 
-        $capacity = new capacity();
-        $days = explode(',',$request->days);
-        \DB::table('capacities')->where('location_id',$request->location_id)->where('day',$days[1])->delete();
-        $capacity->location_id = $request->location_id;
-        $capacity->day_number = $days[0];
-        $capacity->day = $days[1];
-        $capacity->breakfast= $request->breakfast;
-        $capacity->lunch = $request->lunch;
-        $capacity->dinner = $request->dinner;
+        }
+        else {
 
-        $capacity->save();
+            $blackoutdate = new Closedate();
+            $blackoutdate->location_id = $request->location_id;
+            $blackoutdate->closedate = $request->blackoutdate;
+            $blackoutdate->save();
 
-        return redirect()->back()->with('success', 'Day was added!');
+            return redirect()->back()->with('success', 'Date has been added');
+        }
+
     }
 
     /**
@@ -80,15 +71,6 @@ class CapacityController extends Controller
      */
     public function edit($id)
     {
-        $location = location::where('id',$id)->first();
-
-        $blackoutdates = Closedate::where('location_id',$id)->get();
-
-
-
-        $days = capacity::orderBy('day_number','ASC')->where('location_id',$id)->get();
-
-        return view('capacity.edit')->with('location',$location)->with('days',$days)->with('blackoutdates', $blackoutdates);
         //
     }
 
@@ -112,10 +94,11 @@ class CapacityController extends Controller
      */
     public function destroy($id)
     {
-        $capacity = capacity::find($id);
-        $capacity->delete();
 
-        return redirect()->back()->with('danger','Day was removed');
+        Closedate::find($id)->delete();
+
+        return redirect()->back()->with('danger', 'Date has been deleted');
+
         //
     }
 }
