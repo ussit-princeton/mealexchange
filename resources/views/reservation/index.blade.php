@@ -8,15 +8,16 @@
 
     <div class="card" >
         <h5 class="card-header bg-success">
-            Locations
+            Eating Clubs and Co-ops
         </h5>
         <div class="card-body">
 
         <table class="table table-bordered">
   <thead>
     <tr>
-      <th scope="col">#</th>
+
       <th scope="col">Location Name</th>
+        <th>Information</th>
 
 
     </tr>
@@ -26,8 +27,25 @@
 
   @foreach($locations as $location)
     <tr>
-      <th scope="row">{{$location->id}}</th>
-      <td>{{$location->location_name}} <a href="reservation/{{$location->id}}/edit"><button class="btn btn-primary">Select</button></a>  </td>
+
+      <td>{{$location->location_name}}
+              @if ($location->reservation == 1)
+                  <h6><span class="badge badge-success">Reservation Required</span></h6>
+
+              @else
+                  <h6><span class="badge badge-info">First Come First Serve</span></h6>
+              @endif
+              </td>
+
+      <td>
+
+          <a href="reservation/{{$location->id}}/edit">
+              @if ($location->reservation == 1)
+              <button class="btn btn-primary btn-sm">Reserve</button></a>
+             @else
+              <button class="btn btn-info btn-sm">Availability</button></a>
+              @endif
+      </td>
 
 
     </tr>

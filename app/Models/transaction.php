@@ -15,12 +15,7 @@ class transaction extends Model
 
     public function meals() {
 
-        return $this->hasOne(Meal::class,'puid','puid');
+        return $this->hasOne(Meal::class,'puid','guest_puid');
     }
-    public function getWeekNumberAttribute() {
 
-        return 'hello';
-
-
-    }
 }

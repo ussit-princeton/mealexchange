@@ -14,6 +14,6 @@ class Meal extends Model
 
     public function transaction() {
 
-        return $this->belongsTo(transaction::class);
+        return $this->belongsTo(transaction::class,'guest_puid', 'puid');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\capacity;
+use App\Models\Closedate;
 use App\Models\location;
 use App\Models\transaction;
 use App\Models\User;
@@ -71,12 +72,15 @@ class ReservationController extends Controller
         $occupancy = capacity::orderBy('day_number','ASC')->where('location_id',$location->id)->get();
 
 
+        $blackout = Closedate::where('location_id', $id)->get();
+
+
 
 
         $min_date = "+".$location->min_date."d";
         $max_date = "+".$location->max_date."d";
 
-        return view('reservation.edit')->with('location',$location)->with('max_date',$max_date)->with('min_date',$min_date)->with('occupancy',$occupancy);
+        return view('reservation.edit')->with('location',$location)->with('max_date',$max_date)->with('min_date',$min_date)->with('occupancy',$occupancy)->with('blackouts',$blackout);
 
         //
     }
@@ -126,8 +130,10 @@ class ReservationController extends Controller
         $transaction->mealperiod = $request->mealperiod;
         $transaction->meal_day = \Carbon\Carbon::parse($request->date)->format('l');
         $transaction->host_userid = $host->userid;
+        $transaction->host_puid = $host->puid;
         $transaction->host_name = $host->name;
         $transaction->guest_userid = $guest->userid;
+        $transaction->guest_puid = $guest->puid;
         $transaction->guest_name = $guest->name;
         $transaction->approved = 0;
         $transaction->status = 'Pending Host';

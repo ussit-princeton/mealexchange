@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\capacity;
+use App\Models\Closedate;
 use Illuminate\Http\Request;
 use App\Models\location;
 
@@ -68,10 +69,11 @@ class LocationController extends Controller
     {
 
         $location = location::where('id',$id)->first();
+        $blackout = Closedate::where('location_id',$id)->get();
 
 
 
-        return view('location.edit')->with('location',$location);
+        return view('location.edit')->with('location',$location)->with('blackouts',$blackout);
 
 
         //
@@ -90,6 +92,7 @@ class LocationController extends Controller
        $location = location::find($id);
        $location->min_date= $request->min_date;
        $location->max_date = $request->max_date;
+       $location->reservation = $request->reservation;
 
        $location->save();
 

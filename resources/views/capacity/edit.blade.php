@@ -87,21 +87,6 @@
           </table>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       </div>
       <div class="card-footer">
 

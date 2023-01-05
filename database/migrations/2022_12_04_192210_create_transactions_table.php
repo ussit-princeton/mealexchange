@@ -22,8 +22,10 @@ return new class extends Migration
             $table->string('mealperiod');
             $table->string('meal_day');
             $table->string('host_userid');
+            $table->string('host_puid');
             $table->string('host_name');
             $table->string('guest_userid');
+            $table->string('guest_puid');
             $table->string('guest_name');
             $table->boolean('approved')->nullable();
             $table->string('status')->nullable();

@@ -12,14 +12,14 @@
 
                 <div class="card" >
                     <h5 class="card-header bg-success">
-                        Locations
+                        Check-in Locations
                     </h5>
                     <div class="card-body">
 
                         <table class="table table-bordered">
                             <thead>
                             <tr>
-                                <th scope="col">#</th>
+
                                 <th scope="col">Location Name</th>
 
 
@@ -30,7 +30,7 @@
 
                             @foreach($locations as $location)
                                 <tr>
-                                    <th scope="row">{{$location->id}}</th>
+
                                     <td>{{$location->location_name}}</td>
                                     <td><a href="checkin/{{$location->id}}"><button class="btn btn-primary">Select</button></a></td>
 

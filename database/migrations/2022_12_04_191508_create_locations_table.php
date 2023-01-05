@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('location_name');
             $table->string('admin_user');
+            $table->boolean('reservation');
             $table->integer('min_date');
             $table->integer('max_date');
             $table->timestamps();

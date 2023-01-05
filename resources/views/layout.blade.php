@@ -213,25 +213,25 @@
 
 
                 <li class="nav-item">
-                    <a class="nav-link null" href="/">Home</a>
+                    <a class="nav-link {{ Request::segment(1) == '' ? 'active' : null }}" href="/">Home</a>
                 </li>
 
 
                     <li class="nav-item">
 
-                        <a class="nav-link "  href="/reservation">Reservations</a>
+                        <a class="nav-link {{ Request::segment(1) === 'reservation' ? 'active' : null }}"   href="/reservation">Info&Reserve</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " href="/locations">Locations</a>
+                        <a class="nav-link {{ Request::segment(1) === 'locations' ? 'active' : null }} " href="/locations">Locations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="/capacity">Occupancy</a>
+                        <a class="nav-link {{ Request::segment(1) === 'capacity' ? 'active' : null }} " href="/capacity">Occupancy</a>
                     </li>
 
 
                     <li class="nav-item">
-                        <a class="nav-link " href="/checkin">Checkin</a>
+                        <a class="nav-link {{ Request::segment(1) === 'checkin' ? 'active' : null }} " href="/checkin">Checkin</a>
                     </li>
                    <li class="nav-item">
                        <div class="nav-link primary"><h6><span class="badge badge-secondary">Logged in as: James Kim</span></h6></div>

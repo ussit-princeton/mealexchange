@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class capacity extends Model
 {
     use HasFactory;
+
+    public function location() {
+        return $this->belongsTo(location::class, 'id','location_id');
+    }
 }

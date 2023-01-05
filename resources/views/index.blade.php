@@ -13,24 +13,32 @@
         <div class="card-body">
 
             <p class="card-text">
-                Welcome to the Meal Reservation System.
+                Club meals are first come first basis. Reservations are needed for co-op's.
+
+
+
                 <br>
 
             </p>
         </div>
         <div class="card-footer">
+            <a href="/reservation"><button class="btn btn-primary">Reserve/Occupancy</button></a>
 
 
         </div>
-        <hr>
+
     </div>
+
+<hr>
+
     <div class="row">
+
 
         <div class="col-md-12">
 
             <div class="card" >
                 <h5 class="card-header bg-danger">
-                    Current Week Reservations
+                    Current Week Meals/Reservation
                 </h5>
                 <div class="card-body">
                     <p><b class="text-danger">*Meal Balance: 3</b></p>
@@ -63,11 +71,14 @@
 
                                     <td>
 
+                                        @if (\Carbon\Carbon::now()->format('Y-m-d') <= $transaction->meal_date and $transaction->status != 'Manual Insert')
+
                                         <form method="POST" action="/reservation/{{$transaction->id}}">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-sm btn-danger">Delete</button>
                                         </form>
+                                            @endif
 
                                     </td>
 
@@ -112,7 +123,7 @@
 
     <div class="card" >
         <h5 class="card-header bg-primary">
-            Future and Past Reservations
+            Future and Past Meals
         </h5>
         <div class="card-body">
 
@@ -172,7 +183,7 @@
 
         </div>
         <div class="card-footer">
-            <a href="/reservation"><button class="btn btn-primary">Reserve Now!</button></a>
+
         </div>
     </div>
 

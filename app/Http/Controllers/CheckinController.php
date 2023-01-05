@@ -84,8 +84,10 @@ class CheckinController extends Controller
         $transaction->mealperiod = $request->mealperiod;
         $transaction->meal_day = \Carbon\Carbon::parse($request->date)->format('l');
         $transaction->host_userid = $host->userid;
+        $transaction->host_puid = $host->puid;
         $transaction->host_name = $host->name;
         $transaction->guest_userid = $guest->userid;
+        $transaction->guest_puid = $guest->puid;
         $transaction->guest_name = $guest->name;
         $transaction->approved = 1;
         $transaction->status = 'Manual Insert';

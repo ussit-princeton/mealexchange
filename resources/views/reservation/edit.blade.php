@@ -1,5 +1,6 @@
 @extends('layout')
 
+
 @section('content')
     <div class="row">
 
@@ -17,8 +18,8 @@
 
                             <th scope="col">Day</th>
                             <th scope="col">Breakfast</th>
-                            <th scope="col">Dinner</th>
                             <th scope="col">Lunch</th>
+                            <th scope="col">Dinner</th>
 
 
                         </tr>
@@ -51,6 +52,34 @@
         </div>
     </div>
 
+    <div class="row">
+
+        <div class="col-md-12 mb-5">
+
+            <div class="card" >
+                <h5 class="card-header bg-success">
+                    Blackout Dates
+                </h5>
+                <div class="card-body">
+
+                    @foreach ($blackouts as $blackout)
+
+                        <b class="badge badge-danger">{{$blackout->closedate}}</b>
+                    @endforeach
+
+
+
+
+                </div>
+                <div class="card-footer">
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
 
 <div class="row">
 
@@ -60,11 +89,13 @@
 
     <div class="card" >
         <h5 class="card-header bg-success">
-         <b>{{$location->location_name}}</b> -  Reservation
+         <b>{{$location->location_name}}</b> -  Reservation/Information
         </h5>
         <div class="card-body">
 
-            <form method="POST" action="{{ route('reservation.update',$location->id) }}">
+        @if ($location->reservation == 1)
+
+        <form method="POST" action="{{ route('reservation.update',$location->id) }}">
                 @csrf
                 @method('PATCH')
                 <input type="hidden" value="{{$location->location_name}}" name="location_name">
@@ -94,7 +125,13 @@
   </div>
 </form>
 
+        @endif
 
+        @if ($location->resevation == 0)
+            <p>No Reservations are required. This is first come first serve, please look at the open slots and blackout dates, before heading to the club/co-op with your host.
+            </p>
+
+        @endif
 
 
         </div>
@@ -106,6 +143,7 @@
 
 </div>
 </div>
+
 <script type="text/javascript">
 
   var dateToday = new Date();

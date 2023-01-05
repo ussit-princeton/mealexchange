@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * 
+     *
      * Run the migrations.
      *
      * @return void
@@ -21,9 +21,10 @@ return new class extends Migration
             $table->string('puid');
             $table->string('club');
             $table->string('group');
+            $table->integer('location_id');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-    
+
             $table->rememberToken();
             $table->timestamps();
         });

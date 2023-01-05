@@ -1,5 +1,6 @@
 @extends('layout')
 
+
 @section('content')
 
 <div class="row">
@@ -16,7 +17,20 @@
     @csrf
     @method('PATCH')
 
-  <div class="form-group">
+      <div class="form-group">
+
+          <label for="reservation">Reservation Required?</label>
+          <select name="reservation" class="form-control" aria-label=".form-select-sm example">
+              <option value="0" {{$location->reservation == 0 ? "selected": ""}} >No</option>
+              <option value="1" {{$location->reservation == 1 ? "selected": ""}} >Yes</option>
+
+
+          </select>
+
+      </div>
+
+
+      <div class="form-group">
     <label for="exampleFormControlInput1">Reservation Start Day</label>
     <input type="number" name="min_date" class="form-control" id="exampleFormControlInput1" value="{{$location->min_date}}">
   </div>
