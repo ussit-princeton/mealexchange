@@ -6,7 +6,7 @@ return [
     |--------------------------------------------------------------------------
     | Example: 'cas.myuniv.edu'.
     */
-    'cas_hostname' => env('CAS_HOSTNAME', 'cas.myuniv.edu'),
+    'cas_hostname' => env('CAS_HOSTNAME', 'fed.princeton.edu'),
 
     /*
     |--------------------------------------------------------------------------
@@ -16,7 +16,7 @@ return [
     | recommended for protecting against DOS attacks.  If using load
     | balanced hosts, then separate each with a comma.
     */
-    'cas_real_hosts' => env('CAS_REAL_HOSTS', 'cas.myuniv.edu'),
+    'cas_real_hosts' => env('CAS_REAL_HOSTS', 'fed.princeton.edu'),
 
 
     /*
@@ -57,7 +57,7 @@ return [
     |--------------------------------------------------------------------------
     | Sometimes is /cas
     */
-    'cas_uri' => env('CAS_URI', '/cas'),
+    'cas_uri' => env('CAS_URI', '/cas/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,7 @@ return [
     |--------------------------------------------------------------------------
     | Example: 'http://localhost', 'https://example.com:8888'
     */
-    'cas_client_service' => env('CAS_CLIENT_SERVICE', 'http://localhost'),
+    'cas_client_service' => env('CAS_CLIENT_SERVICE', 'https://clubmeal.cpaneldev.princeton.edu'),
 
 
     /*
@@ -111,7 +111,7 @@ return [
     | CAS Logout URI
     |--------------------------------------------------------------------------
     */
-    'cas_logout_url' => env('CAS_LOGOUT_URL', 'https://cas.myuniv.edu/cas/logout'),
+    'cas_logout_url' => env('CAS_LOGOUT_URL', 'https://fed.princeton.edu/cas/logout'),
 
     /*
     |--------------------------------------------------------------------------
@@ -139,7 +139,7 @@ return [
     | this feature, you may be able to retrieve user meta data.
     |--------------------------------------------------------------------------
     */
-    'cas_enable_saml' => env('CAS_ENABLE_SAML', true),
+    'cas_enable_saml' => env('CAS_ENABLE_SAML', false),
 
     /*
     |--------------------------------------------------------------------------

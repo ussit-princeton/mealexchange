@@ -2,6 +2,31 @@
 
 
 @section('content')
+
+    @if($location->reservation==0)
+    <div class="row">
+
+        <div class="col-md-12 mb-5">
+
+            <div class="card" >
+                <h5 class="card-header bg-success">
+                   {{$location->location_name}}
+                </h5>
+                <div class="card-body">
+
+                    No reservation is required. This is first come, first serve. Below are list of availability for dining.
+
+
+                </div>
+                <div class="card-footer">
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
     <div class="row">
 
         <div class="col-md-12 mb-5">
@@ -51,6 +76,7 @@
 
         </div>
     </div>
+    @endif
 
     <div class="row">
 
@@ -82,8 +108,7 @@
 
 
 <div class="row">
-
-
+    @if ($location->reservation == 1)
 <div class="col-md-12 mb-5">
 
 
@@ -93,7 +118,7 @@
         </h5>
         <div class="card-body">
 
-        @if ($location->reservation == 1)
+
 
         <form method="POST" action="{{ route('reservation.update',$location->id) }}">
                 @csrf
@@ -125,13 +150,9 @@
   </div>
 </form>
 
-        @endif
 
-        @if ($location->resevation == 0)
-            <p>No Reservations are required. This is first come first serve, please look at the open slots and blackout dates, before heading to the club/co-op with your host.
-            </p>
 
-        @endif
+
 
 
         </div>
@@ -139,6 +160,7 @@
 
         </div>
     </div>
+    @endif
 
 
 </div>

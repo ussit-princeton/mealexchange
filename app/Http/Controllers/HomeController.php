@@ -16,7 +16,7 @@ class HomeController extends Controller
     {
 
         //cas Authentication to find current reservation
-        $userid = 'jk20';
+        $userid = \Auth::user()->userid;
 
         $current_week = \Carbon\Carbon::now()->weekOfYear;
 

@@ -97,6 +97,69 @@
   </div>
 </div>
 
+
+<div class="row">
+
+    <div class="col-sm-12 sm-5">
+
+        <div class="card">
+            <h5 class="card-header bg-success">
+                {{$location->location_name}}- Add Days/Occupancy
+            </h5>
+            <div class="card-body">
+
+                <form method="POST" action="/capacity">
+                    @csrf
+
+                    <input type="hidden" name="location_id" value={{$location->id}}>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Select Day</label>
+                        <select class="form-control" id="exampleFormControlSelect1" name="days">
+                            <option value="1,Monday">Monday</option>
+                            <option value="2,Tuesday">Tuesday</option>
+                            <option value="3,Wednesday">Wednesday</option>
+                            <option value="4,Thursday">Thursday</option>
+                            <option value="5,Friday">Friday</option>
+                            <option value="6,Saturday">Saturday</option>
+                            <option value="7,Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Breakfast (Max Occupancy)</label>
+                        <input name="breakfast" type="number" class="form-control" id="exampleFormControlInput1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Lunch (Max Occupancy)</label>
+                        <input name="lunch" type="number" class="form-control" id="exampleFormControlInput1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Dinner (Max Occupancy)</label>
+                        <input name="dinner" type="number" class="form-control" id="exampleFormControlInput1" required>
+                    </div>
+
+
+
+
+                    <div class="form-group">
+
+                        <button class="btn btn-primary">Submit</button>
+
+                    </div>
+                </form>
+
+
+
+
+            </div>
+            <div class="card-footer">
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
 <div class="row">
 
     <div class="col-sm-12 sm-5">
@@ -142,67 +205,7 @@
 </div>
 
 
-<div class="row">
 
-  <div class="col-sm-12 sm-5">
-
-    <div class="card">
-      <h5 class="card-header bg-success">
-        {{$location->location_name}}- Add Days/Occupancy
-      </h5>
-      <div class="card-body">
-
-        <form method="POST" action="/capacity">
-          @csrf
-
-          <input type="hidden" name="location_id" value={{$location->id}}>
-          <div class="form-group">
-            <label for="exampleFormControlSelect1">Select Day</label>
-            <select class="form-control" id="exampleFormControlSelect1" name="days">
-              <option value="1,Monday">Monday</option>
-              <option value="2,Tuesday">Tuesday</option>
-              <option value="3,Wednesday">Wednesday</option>
-              <option value="4,Thursday">Thursday</option>
-              <option value="5,Friday">Friday</option>
-              <option value="6,Saturday">Saturday</option>
-              <option value="7,Sunday">Sunday</option>
-            </select>
-          </div>
-            <div class="form-group">
-                <label for="exampleFormControlInput1">Breakfast (Max Occupancy)</label>
-                <input name="breakfast" type="number" class="form-control" id="exampleFormControlInput1" required>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlInput1">Lunch (Max Occupancy)</label>
-                <input name="lunch" type="number" class="form-control" id="exampleFormControlInput1" required>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlInput1">Dinner (Max Occupancy)</label>
-                <input name="dinner" type="number" class="form-control" id="exampleFormControlInput1" required>
-            </div>
-
-
-
-
-          <div class="form-group">
-
-            <button class="btn btn-primary">Submit</button>
-
-          </div>
-        </form>
-
-
-
-
-      </div>
-      <div class="card-footer">
-
-      </div>
-    </div>
-
-
-  </div>
-</div>
 <script type="text/javascript">
   $(function() {
     $("#datepicker").datepicker();

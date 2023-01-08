@@ -18,11 +18,19 @@ class CapacityController extends Controller
      */
     public function index()
     {
-        $locations = location::all();
 
+        if(\Auth::user()->group=='admin') {
 
+            $locations = location::all();
 
-        return view('capacity.index')->with('locations',$locations);
+            return view('capacity.index')->with('locations',$locations);
+        }
+        else {
+
+           $location = \Auth::user()->location_id;
+           return $this->edit($location);
+        }
+
         //
     }
 
@@ -45,20 +53,31 @@ class CapacityController extends Controller
     public function store(Request $request)
     {
 
+        if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$request->location_id) {
 
-        $capacity = new capacity();
-        $days = explode(',',$request->days);
-        \DB::table('capacities')->where('location_id',$request->location_id)->where('day',$days[1])->delete();
-        $capacity->location_id = $request->location_id;
-        $capacity->day_number = $days[0];
-        $capacity->day = $days[1];
-        $capacity->breakfast= $request->breakfast;
-        $capacity->lunch = $request->lunch;
-        $capacity->dinner = $request->dinner;
+            $capacity = new capacity();
+            $days = explode(',',$request->days);
+            \DB::table('capacities')->where('location_id',$request->location_id)->where('day',$days[1])->delete();
+            $capacity->location_id = $request->location_id;
+            $capacity->day_number = $days[0];
+            $capacity->day = $days[1];
+            $capacity->breakfast= $request->breakfast;
+            $capacity->lunch = $request->lunch;
+            $capacity->dinner = $request->dinner;
 
-        $capacity->save();
+            $capacity->save();
 
-        return redirect()->back()->with('success', 'Day was added!');
+            return redirect()->back()->with('success', 'Day was added!');
+
+
+        }
+
+        else {
+            abort(404);
+        }
+
+
+
     }
 
     /**
@@ -80,15 +99,24 @@ class CapacityController extends Controller
      */
     public function edit($id)
     {
-        $location = location::where('id',$id)->first();
 
-        $blackoutdates = Closedate::where('location_id',$id)->get();
+        if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$id) {
+
+            $location = location::where('id',$id)->first();
+
+            $blackoutdates = Closedate::where('location_id',$id)->get();
 
 
+            $days = capacity::orderBy('day_number','ASC')->where('location_id',$id)->get();
 
-        $days = capacity::orderBy('day_number','ASC')->where('location_id',$id)->get();
+            return view('capacity.edit')->with('location',$location)->with('days',$days)->with('blackoutdates', $blackoutdates);
+        }
 
-        return view('capacity.edit')->with('location',$location)->with('days',$days)->with('blackoutdates', $blackoutdates);
+        else {
+            return abort(403);
+        }
+
+
         //
     }
 
@@ -113,9 +141,20 @@ class CapacityController extends Controller
     public function destroy($id)
     {
         $capacity = capacity::find($id);
-        $capacity->delete();
+        $location_id = $capacity->location_id;
 
-        return redirect()->back()->with('danger','Day was removed');
-        //
+        if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$location_id) {
+
+            $capacity = capacity::find($id);
+            $capacity->delete();
+
+            return redirect()->back()->with('danger', 'Day was removed');
+            //
+        }
+
+        else {
+            abort(403);
+        }
+
     }
 }

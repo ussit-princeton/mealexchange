@@ -8,7 +8,7 @@
 
     <div class="card" >
         <h5 class="card-header bg-success">
-            Introduction
+            {{\Auth::user()->name}}
         </h5>
         <div class="card-body">
 
@@ -31,6 +31,7 @@
 
 <hr>
 
+
     <div class="row">
 
 
@@ -43,6 +44,9 @@
                 <div class="card-body">
                     <p><b class="text-danger">*Meal Balance: 3</b></p>
                     <div class="table-responsive">
+
+
+                        @if (sizeof($currentweek) > 0)
                         <table id="example" class="table table-sm" style="font-size:14px;">
                             <thead>
                             <tr>
@@ -95,6 +99,7 @@
 
 
                         </table>
+                            @endif
                     </div>
 
 

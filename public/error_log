@@ -1,0 +1,2 @@
+[06-Jan-2023 12:16:53 America/New_York] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 7.4.33. in /home/clubmeal/mealexchange/vendor/composer/platform_check.php on line 24
+[06-Jan-2023 12:17:40 America/New_York] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 7.4.33. in /home/clubmeal/mealexchange/vendor/composer/platform_check.php on line 24

@@ -98,14 +98,14 @@ class ReservationController extends Controller
        // dd($request);
         $hostname = $request->host;
         $club_name = $request->location_name;
-        $user_id = 'jk20';
+        $user_id = \Auth::user()->userid;
 
         #check host belonging to the club
-        $host = host::where(function ($query) use ($hostname) {
+        $host = host::where(function ($query) use ($hostname,$id) {
             return $query->where('userid', '=', $hostname)
                 ->orWhere('email', '=', $hostname);
-        })->where(function ($query) use ($club_name) {
-            return $query->where('clubname', '=', $club_name);
+        })->where(function ($query) use ($club_name,$id) {
+            return $query->where('location_id', '=', $id);
         })->first();
 
         //replace userid with cas authentication get current user
@@ -115,6 +115,10 @@ class ReservationController extends Controller
         //check host name
         if ($host==null) {
             return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
+        }
+
+        if ($host->userid == \Auth::user()->userid) {
+            return redirect()->back()->with('danger', "Guest and Host can not be the same");
         }
 
         //check dates are within range
@@ -159,7 +163,7 @@ class ReservationController extends Controller
     public function destroy($id)
     {
         //replace with cas
-        $guest_id= 'jk20';
+        $guest_id= \Auth::user()->userid;
 
         $transaction = transaction::where('guest_userid',$guest_id)->where('id',$id)->delete();
 
