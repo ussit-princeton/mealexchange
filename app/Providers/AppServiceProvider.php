@@ -38,7 +38,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('checker', function($user) {
             return $user->group=='checker';
         });
-        
+
+        Gate::define('checkeronly', function($user) {
+           return $user->group='checkeronly';
+        });
+
 
         Gate::define('user', function($user) {
             return $user->group=='user';

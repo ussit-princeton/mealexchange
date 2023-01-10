@@ -121,6 +121,13 @@ class ReservationController extends Controller
             return redirect()->back()->with('danger', "Guest and Host can not be the same");
         }
 
+        $request_date= \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+        $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
+
+        if($duplicate > 0) {
+            return redirect()->back()->with('danger', 'No duplicate meals allowed');
+        }
+
         //check dates are within range
 
         //makes sure they dont have more than 5 reservations in a week

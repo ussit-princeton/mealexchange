@@ -55,6 +55,8 @@ class CheckinController extends Controller
     {
         if(\Auth::user()->group=='admin' or \Auth::user()->location_id == $request->location_id) {
 
+
+
             $hostname = $request->host;
             $guestname = $request->guest;
             $club_name = $request->location_name;
@@ -67,9 +69,6 @@ class CheckinController extends Controller
                 return $query->where('clubname', '=', $club_name);
             })->first();
 
-            if ($host == null) {
-                return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
-            }
 
             #check guest is allowed to be entered
             $guest = User::where(function ($query) use ($guestname) {
@@ -77,18 +76,36 @@ class CheckinController extends Controller
                     ->orWhere('email', '=', $guestname);
             })->first();
 
+            //check dates are within range
+
+            //Error Checking
             if ($guest == null) {
                 return redirect()->back()->with('danger', "No guest $guestname was found for $club_name");
             }
+            if ($host == null) {
+                return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
+            }
+            if ($guest->userid == $host->userid) {
+                return redirect()->back()->with('danger', "Guest and Host can not be the same");
+            }
+            //no duplicate meals
+            $request_date= \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+            $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
+
+            if($duplicate > 0) {
+                return redirect()->back()->with('danger', 'No duplicate meals allowed');
+
+            }
 
 
-            //check dates are within range
 
-            //makes sure they dont have more than 5 reservations in a week
+
+
+
 
             $transaction = new transaction();
             $transaction->puid = $guest->puid;
-            $transaction->meal_date = \Carbon\Carbon::parse($request->date);
+            $transaction->meal_date = $request_date;
             $transaction->week_no = \Carbon\Carbon::parse($request->date)->weekOfYear;
             $transaction->location_id = $request->location_id;
             $transaction->location_name = $request->location_name;
@@ -102,6 +119,7 @@ class CheckinController extends Controller
             $transaction->guest_name = $guest->name;
             $transaction->approved = 1;
             $transaction->status = 'Manual Insert';
+            $transaction->entry_userid = \Auth::user()->userid;
 
             $transaction->save();
 

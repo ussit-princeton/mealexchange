@@ -61,13 +61,10 @@ class ApprovalController extends Controller
      */
     public function edit($id)
     {
-
-
         //cas user
-        $cas_user = 'dspotto';
 
 
-        $transaction = transaction::where('host_userid',$cas_user)->where('id',$id)->first();
+        $transaction = transaction::where('host_userid',cas()->user())->where('id',$id)->where()->first();
 
         if($transaction) {
 
@@ -94,18 +91,22 @@ class ApprovalController extends Controller
     public function update(Request $request, $id)
     {
 
-
-
         //temporary
-        $host_userid = 'dspotto';
+        $host_userid = cas()->user();
         //check to see if the approver is host userid
         $transaction = transaction::where('id',$id)->where('host_userid',$host_userid)->where('status',"Pending Host")->first();
 
         if($transaction) {
             $update = transaction::find($id)->update(['status'=>'Approved','comments'=>$request->comments]);
+            return 'Reservation for the guest has been approved';
         }
 
-        return 'Reservation for the guest has been approved';
+        else {
+
+            return 'No reservations or reservation has already been approved';
+        }
+
+
 
 
         //

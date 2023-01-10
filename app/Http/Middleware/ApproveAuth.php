@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Models\transaction;
+
 
 class ApproveAuth
 {
@@ -16,6 +18,30 @@ class ApproveAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        if (!cas()->checkAuthentication()) {
+
+            if ($request->ajax()) {
+                return abort(401);
+            }
+            cas()->authenticate();
+        }
+
+
+        $transaction_no = $request->route()->parameters['approval'];
+
+        $transaction = transaction::find($transaction_no);
+
+        if($transaction->host_userid == cas()->user()) {
+            session()->put('cas_user', cas()->user());
+            return $next($request);
+        }
+
+        else {
+            abort(403);
+        }
+
+
+
+        }
+
     }
-}

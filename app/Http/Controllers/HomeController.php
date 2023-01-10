@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\transaction;
 use Illuminate\Http\Request;
 
+
 class HomeController extends Controller
 {
     /**
@@ -14,6 +15,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if(\Auth::user()->group == 'checker') {
+
+            return redirect('/checkin/'.\Auth::user()->location_id);
+        }
 
         //cas Authentication to find current reservation
         $userid = \Auth::user()->userid;

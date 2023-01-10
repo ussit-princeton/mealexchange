@@ -216,20 +216,25 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav">
 
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::segment(1) == '' ? 'active' : null }}" href="/">Home</a>
-                </li>
+                @if (auth()->check())
+
+                    @can('user')
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::segment(1) == '' ? 'active' : null }}" href="/">Home</a>
+                    </li>
 
                     <li class="nav-item">
 
                         <a class="nav-link {{ Request::segment(1) === 'reservation' ? 'active' : null }}"   href="/reservation">Info&Reserve</a>
                     </li>
 
-                @can('admin')
-                    <li class="nav-item">
-                        <a class="nav-link {{ Request::segment(1) === 'locations' ? 'active' : null }} " href="/locations">Locations</a>
-                    </li>
-                @endcan
+                    @endcan
+
+                    @can('admin')
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::segment(1) === 'locations' ? 'active' : null }} " href="/locations">Locations</a>
+                        </li>
+                    @endcan
 
                     @can('checker')
                     <li class="nav-item">
@@ -251,8 +256,12 @@
                        <div class="nav-link primary"><h6><span class="badge badge-secondary">Logged in as: {{\Auth::user()->name}}</span></h6></div>
                    </li>
 
+                        <li class="nav-item">
+                            <div class="nav-link primary"><a href="/logout"><h6><span class="badge badge-danger">Logout</span></h6></a></div>
+                        </li>
 
 
+             @endif
 
             </ul>
 
