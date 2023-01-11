@@ -3,7 +3,7 @@
 
 @section('content')
 
-    @if($location->reservation==0)
+
     <div class="row">
 
         <div class="col-md-12 mb-5">
@@ -14,7 +14,7 @@
                 </h5>
                 <div class="card-body">
 
-                    No reservation is required. This is first come, first serve. Below are list of availability for dining.
+
 
 
                 </div>
@@ -33,7 +33,7 @@
 
             <div class="card" >
                 <h5 class="card-header bg-success">
-                    Open Slots
+                    Availability for the Week of {{\Carbon\Carbon::now()->startOfWeek()->format('m/d/Y')}}
                 </h5>
                 <div class="card-body">
 
@@ -76,7 +76,7 @@
 
         </div>
     </div>
-    @endif
+
 
     <div class="row">
 
@@ -168,10 +168,14 @@
 
 <script type="text/javascript">
 
+ var array = {!! json_encode($inactive)  !!};
+
   var dateToday = new Date();
   $(function() {
     $( "#datepicker" ).datepicker({
-      minDate: dateToday
+        format: 'yyyy-mm-dd',
+        minDate: dateToday,
+        datesDisabled: array
     });
   } );
 

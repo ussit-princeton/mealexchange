@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\host;
 
 
+
 class ReservationController extends Controller
 {
     /**
@@ -69,18 +70,37 @@ class ReservationController extends Controller
 
         $location = location::where('id',$id)->first();
 
+        //get count of meals today
+        $week_no = \Carbon\Carbon::now()->weekOfYear;
+        $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$id)->get();
+
         $occupancy = capacity::orderBy('day_number','ASC')->where('location_id',$location->id)->get();
 
+        foreach($occupancy as $cap) {
+
+            foreach($transactionsforweek as $transaction) {
+
+                if ($transaction->meal_day == $cap->day) {
+                    if($transaction->mealperiod =='breakfast')
+                        $cap->breakfast--;
+                    if($transaction->mealperiod =='lunch')
+                        $cap->lunch--;
+                    if($transaction->mealperiod =='dinner')
+                        $cap->dinner--;
+
+                }
+            }
+        }
 
         $blackout = Closedate::where('location_id', $id)->get();
-
+        $inactive = Closedate::where('location_id',$id)->pluck('closedate')->toArray();
 
 
 
         $min_date = "+".$location->min_date."d";
         $max_date = "+".$location->max_date."d";
 
-        return view('reservation.edit')->with('location',$location)->with('max_date',$max_date)->with('min_date',$min_date)->with('occupancy',$occupancy)->with('blackouts',$blackout);
+        return view('reservation.edit')->with('location',$location)->with('max_date',$max_date)->with('min_date',$min_date)->with('occupancy',$occupancy)->with('blackouts',$blackout)->with('inactive',$inactive);
 
         //
     }
@@ -94,8 +114,6 @@ class ReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-       // dd($request);
         $hostname = $request->host;
         $club_name = $request->location_name;
         $user_id = \Auth::user()->userid;
@@ -111,7 +129,7 @@ class ReservationController extends Controller
         //replace userid with cas authentication get current user
         $guest = User::where('userid',$user_id)->first();
 
-
+//some validation
         //check host name
         if ($host==null) {
             return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
@@ -121,6 +139,7 @@ class ReservationController extends Controller
             return redirect()->back()->with('danger', "Guest and Host can not be the same");
         }
 
+        //no duplicates
         $request_date= \Carbon\Carbon::parse($request->date)->format('Y-m-d');
         $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
 
@@ -128,7 +147,53 @@ class ReservationController extends Controller
             return redirect()->back()->with('danger', 'No duplicate meals allowed');
         }
 
-        //check dates are within range
+        //no more than capacity
+        $mealperiod = $request->mealperiod;
+        $week_no = \Carbon\Carbon::now()->weekOfYear;
+        $currentday = \Carbon\Carbon::parse($request->date)->format('l');
+
+        $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$id)->where('meal_day',$currentday)->where('mealperiod',$mealperiod)->count();
+
+        $cap = capacity::where('location_id',$id)->where('day',$currentday)->first();
+
+        if($cap) {
+            if($mealperiod =='breakfast') {
+
+                if($transactionsforweek >= $cap->breakfast)
+
+                return redirect()->back()->with('danger', "Meal period is filled");
+            }
+            if($mealperiod =='lunch') {
+               if($transactionsforweek >= $cap->lunch)
+
+                return redirect()->back()->with('danger', "Meal period is filled");
+            }
+            if($mealperiod =='dinner') {
+                if($transactionsforweek >= $cap->dinner)
+
+                return redirect()->back()->with('danger', "Meal period is filled");
+            }
+
+        }
+
+        //check dates are within range and include blackout dates
+        $alloweddates = location::find($id);
+        $startdate = \Carbon\Carbon::now()->addDays($alloweddates->min_date);
+        $endate = \Carbon\Carbon::now()->addDays($alloweddates->max_date);
+        $blackoutdates = Closedate::where('location_id', $id)->get();
+
+
+        //between the min and max date
+        if (!\Carbon\Carbon::parse($request->date)->between($startdate, $endate)) {
+
+            return redirect()->back()->with('danger','Please make sure the date is within range.');
+        }
+
+        foreach($blackoutdates as $blackout) {
+            if (\Carbon\Carbon::parse($request_date) == \Carbon\Carbon::parse($blackout->closedate)) {
+                return redirect()->back()->with('danger', 'Club is closed for guests during this time.');
+            }
+        }
 
         //makes sure they dont have more than 5 reservations in a week
 
@@ -139,7 +204,7 @@ class ReservationController extends Controller
         $transaction->location_id = $id;
         $transaction->location_name = $request->location_name;
         $transaction->mealperiod = $request->mealperiod;
-        $transaction->meal_day = \Carbon\Carbon::parse($request->date)->format('l');
+        $transaction->meal_day = $currentday;
         $transaction->host_userid = $host->userid;
         $transaction->host_puid = $host->puid;
         $transaction->host_name = $host->name;

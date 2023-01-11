@@ -8,6 +8,7 @@ use http\Params;
 use Illuminate\Http\Request;
 use App\Models\location;
 use App\Models\transaction;
+use App\Models\capacity;
 
 
 class CheckinController extends Controller
@@ -56,7 +57,6 @@ class CheckinController extends Controller
         if(\Auth::user()->group=='admin' or \Auth::user()->location_id == $request->location_id) {
 
 
-
             $hostname = $request->host;
             $guestname = $request->guest;
             $club_name = $request->location_name;
@@ -94,6 +94,38 @@ class CheckinController extends Controller
 
             if($duplicate > 0) {
                 return redirect()->back()->with('danger', 'No duplicate meals allowed');
+
+            }
+
+            //no more than capacity
+            $mealperiod = $request->mealperiod;
+            $week_no = \Carbon\Carbon::now()->weekOfYear;
+            $currentday = \Carbon\Carbon::parse($request->date)->format('l');
+
+            $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$request->location_id)->where('meal_day',$currentday)->where('mealperiod',$mealperiod)->count();
+
+            $cap = capacity::where('location_id',$request->location_id)->where('day',$currentday)->first();
+
+
+
+            if($cap) {
+                if($mealperiod =='breakfast') {
+
+                    if($transactionsforweek > $cap->breakfast)
+
+                    return redirect()->back()->with('danger', "Meal period is filled");
+                }
+                if($mealperiod =='lunch') {
+                    if($transactionsforweek > $cap->lunch)
+
+                    return redirect()->back()->with('danger', "Meal period is filled");
+                }
+                if($mealperiod =='dinner') {
+
+                    if($transactionsforweek > $cap->lunch)
+
+                    return redirect()->back()->with('danger', "Meal period is filled");
+                }
 
             }
 

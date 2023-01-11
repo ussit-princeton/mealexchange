@@ -20,6 +20,13 @@ class HomeController extends Controller
             return redirect('/checkin/'.\Auth::user()->location_id);
         }
 
+      ;
+
+
+
+
+
+
         //cas Authentication to find current reservation
         $userid = \Auth::user()->userid;
 
