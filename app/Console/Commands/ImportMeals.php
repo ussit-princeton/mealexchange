@@ -30,9 +30,12 @@ class ImportMeals extends Command
      */
     public function handle()
     {
-        \DB::table('meals')->truncate();
+      /*  \Mail::raw('Testing 123', function($message) {
+            $message->to('jk20@princeton.edu')->from('jk20@princeton.edu');
+        }); */
+       \DB::table('meals')->truncate();
 
-        Excel::import(new MealImport, storage_path('app/meals.csv'));
+      Excel::import(new MealImport, storage_path('app/upload/Meals_Remaining.csv'));
 
     }
 }

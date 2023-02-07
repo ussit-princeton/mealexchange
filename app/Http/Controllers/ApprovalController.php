@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\transaction;
 use Illuminate\Http\Request;
+use App\Models\location;
 
 class ApprovalController extends Controller
 {
@@ -64,14 +65,21 @@ class ApprovalController extends Controller
         //cas user
 
 
-        $transaction = transaction::where('host_userid',cas()->user())->where('id',$id)->where()->first();
+        $transaction = transaction::where('host_userid',cas()->user())->where('id',$id)->first();
 
-        if($transaction) {
+
+        if($transaction->status=='Pending') {
 
             return view('approvals.edit')->with('transaction',$transaction);
         }
+
+        else if ($transaction->staus=='Approved') {
+            return 'Reservation has been approved already';
+        }
+
         else {
-            return 'No reservation to be approved';
+            abort(403);
+
         }
 
 
@@ -94,11 +102,27 @@ class ApprovalController extends Controller
         //temporary
         $host_userid = cas()->user();
         //check to see if the approver is host userid
-        $transaction = transaction::where('id',$id)->where('host_userid',$host_userid)->where('status',"Pending Host")->first();
+        $transaction = transaction::where('id',$id)->where('host_userid',$host_userid)->where('status',"Pending")->first();
 
+
+        $message = location::find($transaction->location_id);
         if($transaction) {
             $update = transaction::find($id)->update(['status'=>'Approved','comments'=>$request->comments]);
+
+            \Mail::raw("$transaction->host_name has approved $transaction->guest_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date. " 
+                .PHP_EOL. $message->email_message
+                , function($message) use($transaction)
+            {
+                $message->from('jk20@princeton.edu');
+                $message->to([$transaction->host_userid."@princeton.edu", $transaction->guest_userid."@princeton.edu"]);
+                $message->subject('Reservation Approved @ '.$transaction->location_name);
+            });
+
+
+
             return 'Reservation for the guest has been approved';
+
+
         }
 
         else {

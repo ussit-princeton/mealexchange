@@ -18,6 +18,10 @@ class ApproveAuth
      */
     public function handle(Request $request, Closure $next)
     {
+
+        if (\Auth::check()) {
+            \Auth::logout();
+        }
         if (!cas()->checkAuthentication()) {
 
             if ($request->ajax()) {
@@ -31,10 +35,17 @@ class ApproveAuth
 
         $transaction = transaction::find($transaction_no);
 
-        if($transaction->host_userid == cas()->user()) {
-            session()->put('cas_user', cas()->user());
-            return $next($request);
-        }
+
+       if($transaction!= null)
+       {
+           if($transaction->host_userid == cas()->user()) {
+               session()->put('cas_user', cas()->user());
+
+               return $next($request);
+           }
+
+       }
+
 
         else {
             abort(403);

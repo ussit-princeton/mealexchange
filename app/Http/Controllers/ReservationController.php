@@ -7,6 +7,7 @@ use App\Models\Closedate;
 use App\Models\location;
 use App\Models\transaction;
 use App\Models\User;
+use http\Params;
 use Illuminate\Http\Request;
 use App\Models\host;
 
@@ -21,9 +22,13 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $locations = location::all();
+        $locations = location::where('reservation',1)->orderBy('location_name','asc')->get();
+        $now = \Carbon\Carbon::now()->format('Y-m-d');
 
-        return view('reservation.index')->with('locations',$locations);
+        $closed = Closedate::where('closedate',$now)->pluck('location_id')->toArray();
+
+
+        return view('reservation.index')->with('locations',$locations)->with('closed',$closed);
         //
     }
 
@@ -70,6 +75,10 @@ class ReservationController extends Controller
 
         $location = location::where('id',$id)->first();
 
+        if(!$location) {
+            abort(404);
+        }
+
         //get count of meals today
         $week_no = \Carbon\Carbon::now()->weekOfYear;
         $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$id)->get();
@@ -94,6 +103,8 @@ class ReservationController extends Controller
 
         $blackout = Closedate::where('location_id', $id)->get();
         $inactive = Closedate::where('location_id',$id)->pluck('closedate')->toArray();
+
+
 
 
 
@@ -129,7 +140,11 @@ class ReservationController extends Controller
         //replace userid with cas authentication get current user
         $guest = User::where('userid',$user_id)->first();
 
-//some validation
+
+        //making sure they dont have 5 meals in a week
+
+
+        //some validation
         //check host name
         if ($host==null) {
             return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
@@ -149,7 +164,8 @@ class ReservationController extends Controller
 
         //no more than capacity
         $mealperiod = $request->mealperiod;
-        $week_no = \Carbon\Carbon::now()->weekOfYear;
+        $week_no = \Carbon\Carbon::parse($request->date)->weekOfYear;
+        
         $currentday = \Carbon\Carbon::parse($request->date)->format('l');
 
         $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$id)->where('meal_day',$currentday)->where('mealperiod',$mealperiod)->count();
@@ -161,26 +177,29 @@ class ReservationController extends Controller
 
                 if($transactionsforweek >= $cap->breakfast)
 
-                return redirect()->back()->with('danger', "Meal period is filled");
+                return redirect()->back()->with('danger', "Meal period is not available");
             }
             if($mealperiod =='lunch') {
                if($transactionsforweek >= $cap->lunch)
 
-                return redirect()->back()->with('danger', "Meal period is filled");
+                return redirect()->back()->with('danger', "Meal period is not available");
             }
             if($mealperiod =='dinner') {
                 if($transactionsforweek >= $cap->dinner)
 
-                return redirect()->back()->with('danger', "Meal period is filled");
+                return redirect()->back()->with('danger', "Meal period is not available");
             }
 
         }
 
         //check dates are within range and include blackout dates
         $alloweddates = location::find($id);
-        $startdate = \Carbon\Carbon::now()->addDays($alloweddates->min_date);
+        $startdate = \Carbon\Carbon::now()->addDays($alloweddates->min_date -1);
         $endate = \Carbon\Carbon::now()->addDays($alloweddates->max_date);
         $blackoutdates = Closedate::where('location_id', $id)->get();
+        $min_date = $alloweddates->min_date;
+
+
 
 
         //between the min and max date
@@ -189,6 +208,8 @@ class ReservationController extends Controller
             return redirect()->back()->with('danger','Please make sure the date is within range.');
         }
 
+
+
         foreach($blackoutdates as $blackout) {
             if (\Carbon\Carbon::parse($request_date) == \Carbon\Carbon::parse($blackout->closedate)) {
                 return redirect()->back()->with('danger', 'Club is closed for guests during this time.');
@@ -196,11 +217,19 @@ class ReservationController extends Controller
         }
 
         //makes sure they dont have more than 5 reservations in a week
+        $week_no = \Carbon\Carbon::parse($request->date)->weekOfYear;
+        $transaction_week = transaction::where('week_no',$week_no)->where('guest_userid',\Auth::user()->userid)->count();
+        if ($transaction_week >5) {
+            return redirect()->back()->with('danger', 'You are only allowed to have 5 meals per week reserved.');
+        }
+
+
+
 
         $transaction = new transaction();
         $transaction->puid = $guest->puid;
         $transaction->meal_date = \Carbon\Carbon::parse($request->date);
-        $transaction->week_no = \Carbon\Carbon::parse($request->date)->weekOfYear;
+        $transaction->week_no = $week_no;
         $transaction->location_id = $id;
         $transaction->location_name = $request->location_name;
         $transaction->mealperiod = $request->mealperiod;
@@ -212,16 +241,48 @@ class ReservationController extends Controller
         $transaction->guest_puid = $guest->puid;
         $transaction->guest_name = $guest->name;
         $transaction->approved = 0;
-        $transaction->status = 'Pending Host';
+        $transaction->status = 'Pending';
 
         $transaction->save();
 
-        return redirect('/')->with('success','Your reservation has be inserted');
 
 
 
+        //email host
+        \Mail::raw("$transaction->guest_name has requested for approval to $transaction->host_name at $transaction->location_name for $transaction->mealperiod on ". substr($transaction->meal_date,0,10)."."
+        .PHP_EOL."Please click on the link https://clubmeal.cpaneldev.princeton.edu/approval/$transaction->id/edit for approval. You have until " . \Carbon\Carbon::parse($transaction->meal_date)->subDays($min_date)->format('Y-m-d'). " to approve or the reservation will be removed.", function($message) use($transaction)
+        {
+            $message->from('jk20@princeton.edu');
+            $message->to($transaction->host_userid."@princeton.edu");
+            $message->subject('Reservation approval @ '.$transaction->location_name);
+        });
+
+        $location = location::find($transaction->location_id);
+
+        //email admin
+        $admin_users = User::where('location_id',$transaction->location_id)->where('group','=','admin')->pluck('userid');
+        \Mail::raw("$transaction->guest_name has requested $transaction->mealperiod on ". substr($transaction->meal_date,0,10).".", function($message) use($transaction,$admin_users)
+        {
+            $message->from('jk20@princeton.edu');
+            $message->to($admin_users);
+            $message->subject('Reservation request @ '.$transaction->location_name);
+        });
 
 
+        //email guest
+        if($location->email_message != null) {
+            \Mail::raw("Your reservation has been sent to $transaction->host_name to dine at $transaction->location_name for $transaction->mealperiod on ". substr($transaction->meal_date,0,10)."."
+                .PHP_EOL.PHP_EOL, function($message) use($transaction)
+            {
+                $message->from('jk20@princeton.edu');
+                $message->to($transaction->guest_userid."@princeton.edu");
+                $message->subject('Reservation Pending @ '.$transaction->location_name);
+            });
+
+        }
+
+
+        return redirect('/')->with('success','Your reservation has been requested');
 
         //
     }
@@ -237,7 +298,37 @@ class ReservationController extends Controller
         //replace with cas
         $guest_id= \Auth::user()->userid;
 
-        $transaction = transaction::where('guest_userid',$guest_id)->where('id',$id)->delete();
+        $location_id = transaction::where('id',$id)->pluck('location_id')->first();
+
+        $daystodelete = location::where('id',$location_id)->first();
+
+        $now= \Carbon\Carbon::now();
+
+        if (isset($daystodelete->min_date)) {
+
+            $transaction = transaction::find($id);
+
+            $dayOfReservation = \Carbon\Carbon::parse($transaction->meal_date)->subDays($daystodelete->min_date-1);
+
+            if( $now > $dayOfReservation) {
+
+                return redirect()->back()->with('danger', "Last day to delete this meal this meal was $dayOfReservation.");
+            }
+
+        }
+
+        $transaction = transaction::where('guest_userid',$guest_id)->where('id',$id)->where('status','!=','Checkin')->first();
+
+
+        \Mail::raw("$transaction->guest_name has cancelled the reservation with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.", function($message) use($transaction)
+        {
+            $message->from('jk20@princeton.edu');
+            $message->to([$transaction->host_userid."@princeton.edu", $transaction->guest_userid."@princeton.edu"]);
+            $message->subject('Reservation Cancelled @ '.$transaction->location_name);
+        });
+
+
+         $transaction = transaction::where('guest_userid',$guest_id)->where('id',$id)->where('status','!=','Checkin')->delete();
 
         return redirect()->back()->with('danger','Transaction has been removed');
 

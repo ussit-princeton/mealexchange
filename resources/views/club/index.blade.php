@@ -9,7 +9,7 @@
 
     <div class="card" >
         <h5 class="card-header bg-success">
-            Co-ops
+            Eating Clubs
         </h5>
         <div class="card-body">
 
@@ -18,7 +18,7 @@
     <tr>
 
       <th scope="col">Location Name</th>
-        <th>Information</th>
+        <th>Information as of {{\Carbon\Carbon::now()->format('m/d/Y')}}</th>
 
 
     </tr>
@@ -30,27 +30,26 @@
     <tr>
 
       <td>{{$location->location_name}}
+          @if(in_array($location->id, $closed))
+              <span class="badge badge-danger">Closed today</span>
+          @endif
 
-              @if ($location->reservation == 1)
-                  <h6><span class="badge badge-success">Reservation Required</span></h6>
-
-              @else
-                  <h6><span class="badge badge-info">No Reservations Required</span></h6>
-              @endif
+          @if($location->openstatus==0)
+              <span class="badge badge-danger">Unavailable at this time</span>
+         @endif
 
 
-              </td>
+
+      </td>
 
       <td>
 
-          <a href="reservation/{{$location->id}}/edit">
+          <a href="club/{{$location->id}}/edit">
               @if ($location->reservation == 1)
                 <button class="btn btn-primary btn-sm">Reserve</button></a>
-              @elseif(in_array($location->id, $closed))
-                <button class="btn btn-danger btn-sm">Unavailable at this time</button></a>
 
               @else
-                <button class="btn btn-info btn-sm">Schedules and Information</button></a>
+                <button class="btn btn-info btn-sm">Information or Availability</button></a>
               @endif
       </td>
 

@@ -208,7 +208,7 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
         <a class="navbar-brand" href="https://dining.princeton.edu">
-            <img alt="Campus Dining logo"  height="40px" src="{{url('/images/dining_logo.png')}}" class="img-responsive">
+            <img alt="Campus Dining logo"  height="40px" src="{{url('/images/logo.svg')}}" class="img-responsive">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -222,10 +222,14 @@
                     <li class="nav-item">
                         <a class="nav-link {{ Request::segment(1) == '' ? 'active' : null }}" href="/">Home</a>
                     </li>
+                        <li class="nav-item">
+
+                            <a class="nav-link {{ Request::segment(1) === 'club' ? 'active' : null }}"   href="/club">Club Info</a>
+                        </li>
 
                     <li class="nav-item">
 
-                        <a class="nav-link {{ Request::segment(1) === 'reservation' ? 'active' : null }}"   href="/reservation">Info&Reserve</a>
+                        <a class="nav-link {{ Request::segment(1) === 'reservation' ? 'active' : null }}"   href="/reservation">Co-op Reservations</a>
                     </li>
 
                     @endcan
@@ -253,7 +257,7 @@
                     @endcan
 
                    <li class="nav-item">
-                       <div class="nav-link primary"><h6><span class="badge badge-secondary">Logged in as: {{\Auth::user()->name}}</span></h6></div>
+                       <div class="nav-link primary"><h6><span class="badge badge-secondary">Logged in as: {{\Auth::check() ? \Auth::user()->name : "Approver"}}</span></h6></div>
                    </li>
 
                         <li class="nav-item">

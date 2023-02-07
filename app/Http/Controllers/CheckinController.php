@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\host;
 use App\Models\User;
+use http\Message;
 use http\Params;
 use Illuminate\Http\Request;
 use App\Models\location;
 use App\Models\transaction;
 use App\Models\capacity;
+use App\Models\Meal;
 
 
 class CheckinController extends Controller
@@ -57,6 +59,17 @@ class CheckinController extends Controller
         if(\Auth::user()->group=='admin' or \Auth::user()->location_id == $request->location_id) {
 
 
+            if(isset($request->openstatus)) {
+
+                $location = location::find($request->location_id);
+
+                $location->openstatus = $request->openstatus;
+                $location->save();
+
+                return redirect()->back()->with('success', 'Current status is updated');
+
+            }
+
             $hostname = $request->host;
             $guestname = $request->guest;
             $club_name = $request->location_name;
@@ -76,6 +89,8 @@ class CheckinController extends Controller
                     ->orWhere('email', '=', $guestname);
             })->first();
 
+
+
             //check dates are within range
 
             //Error Checking
@@ -93,22 +108,46 @@ class CheckinController extends Controller
             $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
 
             if($duplicate > 0) {
-                return redirect()->back()->with('danger', 'No duplicate meals allowed');
+                return redirect()->back()->with('danger', 'Person already has already checked in for meals');
 
             }
 
+
+
+            //no meals past 8:00pm or before 7am
+            $end = '20:00:00';
+            $start = '06:00:00';
+            $now = \Carbon\Carbon::now()->format('H:i:s');
+
+
+            if($now > $end || $now < $start) {
+                return redirect()->back()->with('danger', 'Check in is not available at this time');
+
+            }
+
+            //check if user has enough meals
+            $noOfMeals = Meal::where('puid',$guest->puid)->pluck('meal_remaining')->first();
+
+
+            if($noOfMeals < 0 || $noOfMeals==null) {
+                return redirect()->back()->with('danger', 'Guest has used all meals for the week or is not on a meal plan, remaining: '.$noOfMeals);
+            }
+
+
+
             //no more than capacity
-            $mealperiod = $request->mealperiod;
-            $week_no = \Carbon\Carbon::now()->weekOfYear;
+        //  $mealperiod = $request->mealperiod;
+         /*   $week_no = \Carbon\Carbon::now()->weekOfYear;
             $currentday = \Carbon\Carbon::parse($request->date)->format('l');
 
             $transactionsforweek = transaction::where('week_no',$week_no)->where('location_id',$request->location_id)->where('meal_day',$currentday)->where('mealperiod',$mealperiod)->count();
 
-            $cap = capacity::where('location_id',$request->location_id)->where('day',$currentday)->first();
+            $cap = capacity::where('location_id',$request->location_id)->where('day',$currentday)->first(); */
+
+            /*make sure the meals checked in is the correct meal period
 
 
-
-            if($cap) {
+            /*      if($cap) {
                 if($mealperiod =='breakfast') {
 
                     if($transactionsforweek > $cap->breakfast)
@@ -127,8 +166,7 @@ class CheckinController extends Controller
                     return redirect()->back()->with('danger', "Meal period is filled");
                 }
 
-            }
-
+            } */
 
 
 
@@ -150,10 +188,24 @@ class CheckinController extends Controller
             $transaction->guest_puid = $guest->puid;
             $transaction->guest_name = $guest->name;
             $transaction->approved = 1;
-            $transaction->status = 'Manual Insert';
+            $transaction->status = 'Checkin';
             $transaction->entry_userid = \Auth::user()->userid;
+            
+
+
+
+
+            \Mail::raw("$transaction->guest_name has checked in with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.", function($message) use($transaction)
+            {
+                $message->from('jk20@princeton.edu');
+                $message->to([$transaction->guest_userid."@princeton.edu", $transaction->host_userid."@princeton.edu"]);
+                $message->subject('Club Checkin @ '.$transaction->location_name);
+            });
+
 
             $transaction->save();
+
+
 
             return redirect()->back()->with('success', 'Transaction was added');
         }
@@ -181,15 +233,50 @@ class CheckinController extends Controller
 
             $today = \Carbon\Carbon::now()->format('Y-m-d');
 
+            $meal_period = '';
+
+            //get current meal period
+            $now = \Carbon\Carbon::now();
+
+            //breakfast start
+            $breakfast_start = \Carbon\Carbon::createFromTimeString('06:00');
+            $breakfast_end = \Carbon\Carbon::createFromTimeString('11:00');
+
+            //lunch start
+            $lunch_start = \Carbon\Carbon::createFromTimeString('11:01');
+            $lunch_end = \Carbon\Carbon::createFromTimeString('14:00');
+
+            //dinner_start
+            $dinner_start = \Carbon\Carbon::createFromTimeString('16:01');
+            $dinner_end = \Carbon\Carbon::createFromTimeString('20:01');
+
+            if($now->between($breakfast_start, $breakfast_end, true)) {
+                $meal_period = 'Breakfast';
+            }
+            else if($now->between($lunch_start, $lunch_end, true)) {
+                $meal_period = 'Lunch';
+            }
+            else if($now->between($dinner_start, $dinner_end, true)) {
+                $meal_period = 'Dinner';
+            }
+            else {
+                $meal_period = 'Closed';
+            }
+
+
             $today_transaction = transaction::where('meal_date', $today)->where('location_id', $id)->with('meals')->get(
             );
 
             $transactions = transaction::orderBy('id', 'DESC')->where('location_id', $id)->with('meals')->get();
 
+
+
+            $meals_remaining = Meal::where('puid',\Auth::user()->puid)->first();
+
             return view('checkin.show')->with('transactions', $transactions)->with('current_week', $current_week)->with(
                 'location',
                 $location
-            )->with('today', $today_transaction);
+            )->with('today', $today_transaction)->with('meal_period',$meal_period);
             //
         }
         else {
@@ -219,6 +306,22 @@ class CheckinController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+       $transaction=  transaction::find($id);
+       $transaction->status= 'Approved';
+       $transaction->entry_userid = \Auth::user()->userid;
+       $transaction->save();
+
+       $location = location::find($transaction->location_id);
+
+        \Mail::raw("Dear $transaction->guest_name ".\Auth::user()->name. " has approved your meal with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.".PHP_EOL. $location->email_message , function($message) use($transaction)
+        {
+            $message->from('jk20@princeton.edu');
+            $message->to([$transaction->guest_userid."@princeton.edu", $transaction->host_userid."@princeton.edu"]);
+            $message->subject('Club Checkin @ '.$transaction->location_name);
+        });
+
+       return redirect()->back()->with('success', 'Reservation has been approved');
         //
     }
 
@@ -230,9 +333,15 @@ class CheckinController extends Controller
      */
     public function destroy($id)
     {
-        $location_id = transaction::find($id)->location_id;
+        $transaction = transaction::find($id);
 
-        if(\Auth::user()->group=='admin' or \Auth::user()->location_id==$location_id) {
+        if(\Auth::user()->group=='admin' or \Auth::user()->location_id==$transaction->location_id) {
+
+            //cant delete processed lunches
+            if ($transaction->processed == 1) {
+                return redirect()->back()->with('danger', 'Items already processed, can not be deleted');
+            }
+
             $transaction = transaction::find($id)->delete();
 
             return redirect()->back()->with('danger', 'Item has been deleted successfully');

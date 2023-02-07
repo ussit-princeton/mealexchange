@@ -18,6 +18,7 @@ Route::middleware('casauth')->group(function() {
 
     Route::get('/','App\Http\Controllers\HomeController@index');
     Route::resource('reservation','App\Http\Controllers\ReservationController')->middleware(['can:user']);
+    Route::resource('club', 'App\Http\Controllers\ClubController')->middleware(['can:user']);
     Route::resource('locations', 'App\Http\Controllers\LocationController')->middleware(['can:admin']);
     Route::resource('checkin', 'App\Http\Controllers\CheckinController')->middleware(['can:checker']);
     Route::resource('capacity','App\Http\Controllers\CapacityController')->middleware(['can:checker']);

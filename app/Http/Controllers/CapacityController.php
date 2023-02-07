@@ -53,7 +53,27 @@ class CapacityController extends Controller
     public function store(Request $request)
     {
 
+
+
         if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$request->location_id) {
+
+
+            if(isset($request->description)) {
+
+
+                $location = location::find($request->location_id);
+                
+                $location->description = $request->description;
+
+                if(isset($request->email_message)) {
+                    $location->email_message = $request->email_message;
+                }
+
+                $location->save();
+
+                return redirect()->back()->with('success','Description and email confirmation was updated');
+
+            }
 
             $capacity = new capacity();
             $days = explode(',',$request->days);

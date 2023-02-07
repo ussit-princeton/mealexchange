@@ -1,6 +1,48 @@
 @extends('layout')
 
 @section('content')
+
+    <div class="row">
+
+        <div class="col-sm-12 sm-5">
+
+            <div class="card">
+                <h5 class="card-header bg-success">
+                    {{$location->location_name}} Description
+                </h5>
+                <form method="POST" action="/capacity">
+                    @csrf
+                    <input hidden name="location_id" value="{{$location->id}}">
+                <div class="card-body">
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Intro Description</label>
+                        <textarea style="white-space: pre-wrap;" class="form-control" id="exampleFormControlTextarea1" name="description" rows="6">{{$location->description}}</textarea>
+                    </div>
+
+                    @if ($location->reservation ==1)
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Additional Email Confirmation (Already included in email - the guest name and Host location/date/ and dining period.)</label>
+                        <textarea style="white-space: pre-wrap;" class="form-control" id="exampleFormControlTextarea1" name="email_message" rows="6">{{$location->email_message}}</textarea>
+                    </div>
+                   @endif
+
+
+                </div>
+                <div class="card-footer">
+
+                    <button class="btn btn-primary">Submit</button>
+
+                </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+
+
+<hr>
 <div class="row">
 
   <div class="col-sm-12 sm-5">
@@ -11,7 +53,8 @@
       </h5>
       <div class="card-body">
 
-          <h5 class="text-primary">Daily Occupancy</h5>
+          @if($location->reservation == 1)
+          <h5 class="text-primary">Weekly Occupancy</h5>
 
         <table class="table table-bordered table-sm" style="font-size:12px;">
           <thead>
@@ -49,6 +92,7 @@
 
           </tbody>
         </table>
+          @endif
 
 
           <h5 class="text-danger">Blackout Dates</h5>
@@ -97,7 +141,7 @@
   </div>
 </div>
 
-
+@if ($location->reservation == 1)
 <div class="row">
 
     <div class="col-sm-12 sm-5">
@@ -159,6 +203,7 @@
 
     </div>
 </div>
+@endif
 
 <div class="row">
 

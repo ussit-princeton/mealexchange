@@ -24,6 +24,7 @@
                                         <td>Host</td>
                                         <td>Meal</td>
                                         <td>Status</td>
+                                        <td>Approve</td>
 
 
                                         <td>Delete</td>
@@ -42,13 +43,23 @@
                                             <td>{{$transaction->mealperiod}}</td>
                                             <td>{{$transaction->status}}</td>
 
+                                            <td>
+                                                @if (\Carbon\Carbon::now()->format('Y-m-d') <= $transaction->meal_date and !$transaction->processed ==1 and $transaction->status=='Pending')
+                                                    <form method="POST" action="/checkin/{{$transaction->id}}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button class="btn btn-sm btn-primary" style="font-size: 0.8em;">Approve</button>
+                                                    </form>
+                                                @endif
+                                            </td>
+
 
                                             <td>
-                                                @if (\Carbon\Carbon::now()->format('Y-m-d') <= $transaction->meal_date)
+                                                @if (\Carbon\Carbon::now()->format('Y-m-d') <= $transaction->meal_date and !$transaction->processed ==1)
                                                 <form method="POST" action="/checkin/{{$transaction->id}}">
                                                     @csrf
                                                     @method('DELETE')
-                                                <button class="btn btn-sm btn-danger" style="font-size: 0.8em;">Delete</button>
+                                                <button class="btn btn-sm btn-danger show_confirm" style="font-size: 0.8em;">Delete</button>
                                                 </form>
                                                 @endif
                                             </td>
@@ -92,6 +103,29 @@
                         responsive:true
                     });
                 });
+            </script>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+            <script type="text/javascript">
+
+                $('.show_confirm').click(function(event) {
+                    var form =  $(this).closest("form");
+                    var name = $(this).data("name");
+                    event.preventDefault();
+                    swal({
+                        title: `Are you sure you want to delete this record?`,
+                        text: "",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                form.submit();
+                            }
+                        });
+                });
+
             </script>
 
 

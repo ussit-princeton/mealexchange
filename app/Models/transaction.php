@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class transaction extends Model
 {
     protected $guarded = [];
-    protected $appends= ['week_number'];
+
 
     use HasFactory;
 
@@ -17,5 +17,7 @@ class transaction extends Model
 
         return $this->hasOne(Meal::class,'puid','guest_puid');
     }
+
+
 
 }

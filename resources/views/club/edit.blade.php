@@ -14,7 +14,7 @@
                 </h5>
                 <div class="card-body">
 
-                    <p style="white-space: pre-wrap;">{{$location->description}}</p>
+                    <p>{{$location->description}}</p>
 
 
 
@@ -196,7 +196,7 @@
       $(function() {
           $("#datepicker").datepicker().on('changeDate', function(e) {
               let newwdate = new Date($(this).val());
-              newwdate.setDate(newwdate.getDate() - leadtime +1)
+              newwdate.setDate(newwdate.getDate() - leadtime)
 
               $("#deadline").text("The host has until "+ newwdate.toDateString() + " to approve, or the reservation will be deleted.")
               console.log(newwdate.toDateString())

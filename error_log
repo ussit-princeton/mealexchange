@@ -1,0 +1,1 @@
+[29-Jan-2023 12:24:07 US/Eastern] PHP Fatal error:  Declaration of App\Imports\MealImport::startRow() must be compatible with Maatwebsite\Excel\Concerns\WithStartRow::startRow(): int in /home/clubmeal/mealexchange/app/Imports/MealImport.php on line 24
