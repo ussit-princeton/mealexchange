@@ -107,7 +107,8 @@ class ApprovalController extends Controller
 
         $message = location::find($transaction->location_id);
         if($transaction) {
-            $update = transaction::find($id)->update(['status'=>'Approved','comments'=>$request->comments]);
+            $update = transaction::find($id)->update(['status'=>'Approved','approved'=>1,'comments'=>$request->comments,'entry_userid'=>$host_userid]);
+
 
             \Mail::raw("$transaction->host_name has approved $transaction->guest_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date. " 
                 .PHP_EOL. $message->email_message

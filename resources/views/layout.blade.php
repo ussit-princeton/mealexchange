@@ -126,7 +126,7 @@
 
         .nav-item {
 
-            font-size: 16px;
+            font-size: 15px;
         }
 
         ul {
@@ -160,17 +160,70 @@
             overflow: hidden;
         }
         .carousel-caption {
-            width:200px;
-            z-index:10;
+            width:40%;
+            z-index:20;
             color:#fff;
             text-align:center;
             top:50%;
-            left:10%;
+            left:30%;
             bottom:auto;
             -webkit-transform:translate(0, -50%);
             -ms-transform:translate(0, -50%);
             transform:translate(0, -50%);
         }
+
+        .carousel-item.active,
+        .carousel-item-next,
+        .carousel-item-prev{
+            display:block;
+        }
+
+         h1 {
+             font-size: 36px;
+
+        }
+
+      @media (max-width:400px) {
+
+          .title {
+              display: block;
+          }
+      }
+
+
+
+       @media (min-width:600px) {
+            .title {
+
+                display: none;
+            }
+        }
+
+        @media (min-width:800px) {
+
+            .headertitle {
+
+                font-weight: bold;
+                text-transform: capitalize;
+                font-family: Optima;
+                font-stretch: expanded;
+                font-size: 40px;
+
+            }
+
+        }
+
+        @media (min-width:600px) {
+
+            .headertitle {
+
+                font-size: 24px;
+
+            }
+
+        }
+
+
 
 
 
@@ -206,12 +259,15 @@
 <body>
 
 <header>
-    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light">
         <a class="navbar-brand" href="https://dining.princeton.edu">
             <img alt="Campus Dining logo"  height="40px" src="{{url('/images/logo.svg')}}" class="img-responsive">
+
         </a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
+
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav">
@@ -238,21 +294,27 @@
                         <li class="nav-item">
                             <a class="nav-link {{ Request::segment(1) === 'locations' ? 'active' : null }} " href="/locations">Locations</a>
                         </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Request::segment(1) === 'graphs' ? 'active' : null }} " href="/graphs">Dashboard</a>
+                            </li>
                     @endcan
 
                     @can('checker')
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::segment(1) === 'capacity' ? 'active' : null }} " href="/capacity">Occupancy</a>
+                        <a class="nav-link {{ Request::segment(1) === 'capacity' ? 'active' : null }} " href="/capacity">Venue Info</a>
                     </li>
 
 
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::segment(1) === 'checkin' ? 'active' : null }} " href="/checkin">Checkin</a>
+                        <a class="nav-link {{ Request::segment(1) === 'checkin' ? 'active' : null }} " href="/checkin">Guest Check In</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::segment(1) === 'history' ? 'active' : null }} " href="/history">History</a>
+                        <a class="nav-link {{ Request::segment(1) === 'history' ? 'active' : null }} " href="/history">Reservations/Records</a>
                     </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Request::segment(1) === 'history' ? 'active' : null }} " >Resources (coming soon)</a>
+                            </li>
 
                     @endcan
 
@@ -281,8 +343,16 @@
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="first-slide" src="{{url('/images/eatingclubs2.jpg')}}" style="height: 400px" alt="First slide">
+                <img class="first-slide" src="{{url('/images/portalbanner.jpg')}}" style="height: 400px; opacity: .3" alt="First slide">
+                <div class="carousel-caption headertitle">
+                    <h3>Dining Pilot Portal</h3>
+
+                </div>
+
+
                 <div class="container">
+
+
 
                 </div>
             </div>
@@ -338,7 +408,7 @@
 
 
             <div class="col-md-4">
-                <p>Campus Dining - University Services<br>
+                <!--p>Campus Dining - University Services<br>
                     Phone: 609-258-6097<br>
 
                     <a href="mailto:dining@princeton.edu">dining@princeton.edu</a></p>
@@ -349,14 +419,14 @@
                     <a href="mailto:catering@princeton.edu">catering@princeton.edu</a><br>
                     <a href="mailto:ptiger@princeton.edu">ptiger@princeton.edu</a></p>
 
-                <p><a href="http://www.princeton.edu/universityservices/"><img alt="University Services" src="https://lunchtogo.deptcpanel.princeton.edu/img/us_logo.png"></a></p>
+                <p><a href="http://www.princeton.edu/universityservices/"><img alt="University Services" src="https://lunchtogo.deptcpanel.princeton.edu/img/us_logo.png"></a></p-->
 
 
             </div>
             <div class="col-md-4">
 
 
-                <ul class="links inline clearfix">
+                <!--ul class="links inline clearfix">
                     <li class="menu-10021 first"><a href="https://menus.princeton.edu/dining/_Foodpro/online-menu/">Today's Menus</a></li>
 
                     <li class="menu-11206"><a href="https://dining.princeton.edu/meal-plans">Meal Plans</a>
@@ -365,7 +435,7 @@
                     <li class="menu-10036"><a href="https://dining.princeton.edu/catering/reunions">Reunions Planning</a></li>
                     <li class="menu-9886 last"><a href="https://dining.princeton.edu/our-story/join-our-team">Careers</a></li>
 
-                </ul>
+                </ul-->
             </div>
             <div class="col-md-4">
                 <p><a href="http://www.princeton.edu/" title="Princeton University"><img src="https://lunchtogo.deptcpanel.princeton.edu/img/pu-logo-white.svg" alt="Princeton University Logo"></a></p>

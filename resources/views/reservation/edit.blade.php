@@ -28,7 +28,7 @@
 
         </div>
     </div>
-    @if($occupancy->count() > 0)
+    @if($occupancy->count() > 0 and $location->reservation == 1)
     <div class="row">
 
         <div class="col-md-12 mb-5">
@@ -41,7 +41,7 @@
 
                     <table class="table table-bordered">
                         <thead>
-                        <tr>
+                        <tr style="font-size: 13px;">
 
                             <th scope="col">Day</th>
                             <th scope="col">Breakfast</th>
@@ -51,7 +51,7 @@
 
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="font-size: 13px">
                         @foreach($occupancy as $occ)
                             <tr>
                                 <td>{{$occ->day}}</td>
@@ -130,7 +130,7 @@
                 <input type="hidden" value="{{$location->location_name}}" name="location_name">
 
   <div class="form-group">
-      <label for="exampleFormControlInput1">Host Name (email address or userid)<br> <b class="text-danger">If not hosted please enter:  {{$location->admin_user}}</b></label>
+      <label for="exampleFormControlInput1">Host NetID</label>
     <input type="text" name="host" class="form-control" id="exampleFormControlInput1" placeholder="xjk@princeton.edu or xjk">
   </div>
   <div class="form-group">

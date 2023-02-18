@@ -6,30 +6,63 @@
 
 <div class="col-md-12 mb-5">
 
-    <div class="card" >
-        <h5 class="card-header bg-success">
-            {{\Auth::user()->name}}
-        </h5>
-        <div class="card-body">
+    <div class="row">
 
-            <p class="card-text">
-                Club meals are first come first basis. Reservations are needed for co-op's.
+        <div class="col-sm-6 mx-auto">
 
 
+            <div class="card">
+                <p class="card-header bg-success" style="text-align: center;">
+                  Welcome to the Dining Pilot Portal, {{\Auth::user()->name}}
+                </>
+                <div class="card-body" style="text-align: center;">
 
-                <br>
+                    <span><b>Your Weekly Balance is:</b></span>
 
-            </p>
+                        <br>
+                    <span><h4 class="text-info">{{$balance}}</h4></span>
+                    <p>Balances update when meal period concludes.</p>
+
+
+
+
+
+                </div>
+                <div class="card-footer">
+
+                </div>
+
+            </div>
+
+
+            <div style="margin-top: 30px; text-align: center;">
+                <p><h4><b>What do you want to do?</b></h4></p>
+
+                <b>Dine at an Eating Club</b>
+                <p><a href="/club"><button class="btn btn-primary btn-sm">VIEW CLUB INFO</button></a></p>
+
+
+
+                <b>Dine at a Co-op</b>
+                <p><span style="margin-left: 10px"><a href="/reservation"><button class="btn btn-primary btn-sm">MAKE A RESERVATION</button></a></span></p>
+
+
+
+
+            </div>
+
+
+
+
         </div>
-        <div class="card-footer">
-            <a href="/club"><button class="btn btn-primary">Club Info</button></a>
-
-            <span style="margin-left: 10px"><a href="/reservation"><button class="btn btn-primary">Co-op Reservations</button></a></span>
 
 
-        </div>
+
 
     </div>
+
+
+
 
 <hr>
 
@@ -40,11 +73,11 @@
         <div class="col-md-12">
 
             <div class="card" >
-                <h5 class="card-header bg-danger">
-                    Current Week Meals/Reservation
+                <h5 class="card-header bg-primary">
+                   This Week's Activity
                 </h5>
                 <div class="card-body">
-                    <p>*Meal Balance:<b class="text-danger"><u> {{$balance}}</u></b></p>
+
                     <div class="table-responsive">
 
 
@@ -108,8 +141,8 @@
 
                 </div>
                 <div class="card-footer">
-                    <p class="text-danger">*Meal Balance reflects past meals taken this week @Club/Co-ops and Dining Halls.</p>
-           
+
+
                 </div>
             </div>
 
@@ -131,7 +164,7 @@
         <div class="col-md-12">
 
             <div class="card" >
-                <h5 class="card-header bg-primary">
+                <h5 class="card-header bg-info">
                     Co-op Reservations
                 </h5>
                 <div class="card-body">
@@ -214,7 +247,7 @@
 <div class="col-md-12">
 
     <div class="card" >
-        <h5 class="card-header bg-info">
+        <h5 class="card-header bg-success">
             Past Meals
         </h5>
         <div class="card-body">

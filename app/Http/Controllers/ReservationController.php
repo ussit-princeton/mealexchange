@@ -260,13 +260,20 @@ class ReservationController extends Controller
         $location = location::find($transaction->location_id);
 
         //email admin
+
         $admin_users = User::where('location_id',$transaction->location_id)->where('group','=','admin')->pluck('userid');
-        \Mail::raw("$transaction->guest_name has requested $transaction->mealperiod on ". substr($transaction->meal_date,0,10).".", function($message) use($transaction,$admin_users)
-        {
-            $message->from('jk20@princeton.edu');
-            $message->to($admin_users);
-            $message->subject('Reservation request @ '.$transaction->location_name);
-        });
+
+
+     /*   if(!count($admin_users) ==0 ) {
+            \Mail::raw("$transaction->guest_name has requested $transaction->mealperiod on ". substr($transaction->meal_date,0,10).".", function($message) use($transaction,$admin_users)
+            {
+                $message->from('jk20@princeton.edu');
+                $message->to($admin_users);
+                $message->subject('Reservation request @ '.$transaction->location_name);
+            });
+
+        } */
+
 
 
         //email guest

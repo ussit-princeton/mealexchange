@@ -10,7 +10,7 @@
 
                     <div class="card" >
                         <h5 class="card-header bg-primary">
-                           Meal History - {{$location->location_name}}
+                           {{$location->reservation==1 ? "Reservations" : "Guest Logs"}} - {{$location->location_name}}
                         </h5>
                         <div class="card-body">
 

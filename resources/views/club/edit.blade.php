@@ -28,7 +28,8 @@
 
         </div>
     </div>
-    @if($occupancy->count() > 0)
+
+    @if($occupancy->count() > 0 and $location->reservation == 1)
     <div class="row">
 
         <div class="col-md-12 mb-5">
@@ -109,66 +110,76 @@
 
         </div>
     </div>
+    <div class="row">
 
 
-<div class="row">
-    @if ($location->reservation == 1)
-<div class="col-md-12 mb-5">
+        <div class="col-md-12 mb-5">
 
 
-    <div class="card" >
-        <h5 class="card-header bg-success">
-         <b>{{$location->location_name}}</b> -  Reservation/Information
-        </h5>
-        <div class="card-body">
+            <div class="card" >
+                <h5 class="card-header bg-success">
+                    Self Check in Request for {{\Carbon\Carbon::now()->format('m/d/Y')}}<span id='ct5' style=""></span>
+                </h5>
+                <div class="card-body">
+                    <p>Please put in a request for today. The host and admin will receive an email for approval. (ALL REQUESTS ARE PENDING UNTIL APPROVED)</p>
+                    <p>Once you have been approved by the host or admin, you will receive confirmation that your request has been approved.
+                        You can also see this on your home landing page. <b>You will not be allowed to dine until your host or admin has approved your request.</b>
+                    <b>All pending requests that are not approved will be deleted at end of day.</b></p>
 
 
+                    <form method="POST" action="/club">
+                        @csrf
 
-        <form method="POST" action="{{ route('reservation.update',$location->id) }}">
-                @csrf
-                @method('PATCH')
-                <input type="hidden" value="{{$location->location_name}}" name="location_name">
+                        <div class="form-check">
 
-  <div class="form-group">
-      <label for="exampleFormControlInput1">Host Name (email address or userid)<br> <b class="text-danger">If not hosted please enter:  {{$location->admin_user}}</b></label>
-    <input type="text" name="host" class="form-control" id="exampleFormControlInput1" placeholder="xjk@princeton.edu or xjk">
-  </div>
-  <div class="form-group">
-  <p>Date:<input class="form-control" name="date" type="text" id="datepicker"data-date-start-date="{{$min_date}}" data-date-end-date="{{$max_date}}"></p>
-</div>
-<div class="form-group">
-    <span style="font-weight: bold" class="text-danger" id="deadline"></span>
-</div>
-
-<div class="form-group">
-    <label for="exampleFormControlSelect1">Meal Period</label>
-    <select class="form-control" id="mealperiod" name="mealperiod" required>
-      <option value="">Pick one</option>
-      <option value="breakfast">Breakfast</option>
-      <option value="lunch">Lunch</option>
-      <option value="dinner">Dinner</option>
-
-    </select>
-  </div>
-
-  <div class="form-group">
-
-  <button class="btn btn-primary">Submit</button>
-
-  </div>
-</form>
+                        </div>
 
 
 
+                        <input type="hidden" value="{{$location->location_name}}" name="location_name">
+                        <input type="hidden" value="{{$location->id}}" name="location_id">
+
+
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Host NetID</label>
+                            <input type="text" required name="host" class="form-control" id="exampleFormControlInput1" placeholder="Enter host">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1">Meal Period</label>
+                            <select required class="form-control" id="exampleFormControlSelect2" name="mealperiod">
+                                <option  value="">Pick one:</option>
+                                <option  value="breakfast">Breakfast</option>
+                                <option  value="lunch">Lunch</option>
+                                <option  value="dinner">Dinner</option>
+
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+
+                            <button class="btn btn-primary closedate">Submit</button>
+
+                        </div>
+                    </form>
 
 
 
-        </div>
-        <div class="card-footer">
+
+                </div>
+                <div class="card-footer">
+
+                </div>
+            </div>
+
 
         </div>
     </div>
-    @endif
+
+
+
+
 
 
 </div>

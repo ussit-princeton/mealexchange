@@ -22,13 +22,42 @@ class ClubController extends Controller
     public function index()
     {
 
-        $locations = location::where('reservation',0)->orderBy('location_name','asc')->get();
+        $currentday = \Carbon\Carbon::now()->format('l');
+        $currentweekno = \Carbon\Carbon::now()->weekOfYear;
+
+
+
+        $locations = location::where('reservation',0)->with('capacity')->orderBy('location_name','asc')->get();
+
+
+
+        foreach($locations as $location) {
+
+            foreach ($location->capacity as $cap) {
+
+                $breakfastcount = transaction::where('week_no',$currentweekno)->where('location_id',$location->id)->where('meal_day',$currentday)->where('mealperiod','breakfast')->count();
+                $lunchcount = transaction::where('week_no',$currentweekno)->where('location_id',$location->id)->where('meal_day',$currentday)->where('mealperiod','lunch')->count();
+                $dinnercount = transaction::where('week_no',$currentweekno)->where('location_id',$location->id)->where('meal_day',$currentday)->where('mealperiod','dinner')->count();
+
+                if ($cap->day == $currentday) {
+                    $cap->breakfast -= $breakfastcount;
+                    $cap->lunch -= $lunchcount;
+                    $cap->dinner -= $dinnercount;
+                }
+             
+
+            }
+        }
+
+
         $now = \Carbon\Carbon::now()->format('Y-m-d');
 
         $closed = Closedate::where('closedate',$now)->pluck('location_id')->toArray();
 
 
-        return view('club.index')->with('locations',$locations)->with('closed',$closed);
+
+
+        return view('club.index')->with('locations',$locations)->with('closed',$closed)->with('currentday',$currentday);
         //
     }
 
@@ -50,6 +79,8 @@ class ClubController extends Controller
      */
     public function store(Request $request)
     {
+
+
         //
     }
 
@@ -104,11 +135,9 @@ class ClubController extends Controller
         $inactive = Closedate::where('location_id',$id)->pluck('closedate')->toArray();
 
 
-
-
-
         $min_date = "+".$location->min_date."d";
         $max_date = "+".$location->max_date."d";
+
 
         return view('reservation.edit')->with('location',$location)->with('max_date',$max_date)->with('min_date',$min_date)->with('occupancy',$occupancy)->with('blackouts',$blackout)->with('inactive',$inactive);
 

@@ -92,7 +92,7 @@
 
                     <div class="card" >
                         <h5 class="card-header bg-success">
-                             Today@ <span id='ct5' style=""></span>- <span id="meal_periods">{{$meal_period}}</span>
+                         Today's Availability
                         </h5>
                         <div class="card-body">
 
@@ -102,17 +102,42 @@
                                 <input type="hidden" value="{{$location->id}}" name="location_id">
                                 <input type="hidden" value="status" name="status">
 
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" id="radio2" name="openstatus" value="1" {{$location->openstatus == 1 ? 'checked': ''}}>Open
-                                <label class="form-check-label" for="radio2" style="margin-right: 20px"></label>
-                                <input type="radio" class="form-check-input" id="radio1" name="openstatus" value="0" {{$location->openstatus==0 ? 'checked' : ''}}>Unavailable
-                                <label class="form-check-label" for="radio1"></label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="radio2" name="openstatus" value="1" {{$location->openstatus == 1 ? 'checked': ''}}>Open
+                                    <label class="form-check-label" for="radio2" style="margin-right: 20px"></label>
+                                    <input type="radio" class="form-check-input" id="radio1" name="openstatus" value="0" {{$location->openstatus==0 ? 'checked' : ''}}>Unavailable
+                                    <label class="form-check-label" for="radio1"></label>
 
-                                <button class="btn btn-info">Update Status</button>
-                            </div>
+                                    <button class="btn btn-info">Update Status</button>
+                                </div>
                             </form>
                             <hr>
 
+
+
+
+                        </div>
+                        <div class="card-footer">
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="row">
+
+
+                <div class="col-md-12 mb-5">
+
+
+                    <div class="card" >
+                        <h5 class="card-header bg-success">
+                             Today@ <span id='ct5' style=""></span>
+                        </h5>
+                        <div class="card-body">
+                            
 
                             <form method="POST" action="/checkin">
                                 @csrf
@@ -126,19 +151,19 @@
                                 <input type="hidden" value="{{$location->location_name}}" name="location_name">
                                 <input type="hidden" value="{{$location->id}}" name="location_id">
                                 <div class="form-group">
-                                    <label for="exampleFormControlInput1">Guest Name (email address or userid)</label>
+                                    <label for="exampleFormControlInput1">Guest NetID</label>
                                     <input type="text" required name="guest" class="form-control" id="exampleFormControlInput1" placeholder="xjk@princeton.edu or xjk">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="exampleFormControlInput1">Host Name (email address or userid) {{$location->admin_user}} </label>
+                                    <label for="exampleFormControlInput1">Host NetID</label>
                                     <input type="text" required name="host" class="form-control" id="exampleFormControlInput1" placeholder="Enter host">
                                 </div>
 
 
                                 <div class="form-group">
                                     <label for="exampleFormControlSelect1">Meal Period</label>
-                                    <select required class="form-control" id="exampleFormControlSelect1" name="mealperiod">
+                                    <select required class="form-control" id="exampleFormControlSelect2" name="mealperiod">
                                         <option {{$meal_period == 'Closed' ? 'selected': ''}}  value="">Pick one:</option>
                                         <option {{$meal_period == 'Breakfast' ? 'selected': ''}} value="breakfast">Breakfast</option>
                                         <option {{$meal_period == 'Lunch' ? 'selected': ''}}  value="lunch">Lunch</option>
@@ -195,7 +220,7 @@
 
 
                     }
-                   if (x.getHours() > 10 && x.getHours() < 14) {
+                   if (x.getHours() > 10 && x.getHours() < 15) {
                        document.getElementById('meal_periods').innerHTML= 'Lunch'
                        meal_select.value = 'lunch'
 

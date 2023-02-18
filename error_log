@@ -1,1 +1,2 @@
 [29-Jan-2023 12:24:07 US/Eastern] PHP Fatal error:  Declaration of App\Imports\MealImport::startRow() must be compatible with Maatwebsite\Excel\Concerns\WithStartRow::startRow(): int in /home/clubmeal/mealexchange/app/Imports/MealImport.php on line 24
+[13-Feb-2023 02:13:24 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 8.0.25. in /home/clubmeal/mealexchange/vendor/composer/platform_check.php on line 24

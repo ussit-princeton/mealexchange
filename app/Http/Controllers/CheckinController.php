@@ -108,7 +108,7 @@ class CheckinController extends Controller
             $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
 
             if($duplicate > 0) {
-                return redirect()->back()->with('danger', 'Person already has already checked in for meals');
+                return redirect()->back()->with('danger', "Guest already has already checked in for $request->mealperiod" );
 
             }
 
@@ -247,7 +247,7 @@ class CheckinController extends Controller
             $lunch_end = \Carbon\Carbon::createFromTimeString('14:00');
 
             //dinner_start
-            $dinner_start = \Carbon\Carbon::createFromTimeString('16:01');
+            $dinner_start = \Carbon\Carbon::createFromTimeString('14:01');
             $dinner_end = \Carbon\Carbon::createFromTimeString('20:01');
 
             if($now->between($breakfast_start, $breakfast_end, true)) {

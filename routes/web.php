@@ -26,8 +26,12 @@ Route::middleware('casauth')->group(function() {
     Route::resource('history', 'App\Http\Controllers\ReportController')->middleware(['can:checker']);
     Route::get('/logout', 'App\Http\Controllers\LogoutController@index');
 
+    Route::resource('graphs', 'App\Http\Controllers\GraphController')->middleware(['can:admin']);
+
+
 
 });
 Route::resource('approval', 'App\Http\Controllers\ApprovalController')->middleware('approvalauth');
+
 
 
