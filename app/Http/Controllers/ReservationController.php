@@ -125,6 +125,8 @@ class ReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+
         $hostname = $request->host;
         $club_name = $request->location_name;
         $user_id = \Auth::user()->userid;
@@ -221,6 +223,12 @@ class ReservationController extends Controller
         $transaction_week = transaction::where('week_no',$week_no)->where('guest_userid',\Auth::user()->userid)->count();
         if ($transaction_week >5) {
             return redirect()->back()->with('danger', 'You are only allowed to have 5 meals per week reserved.');
+        }
+
+        //make sure they are a guest in the same club they belong to
+        $hostperson = host::where('userid', \Auth::user()->userid)->where('clubname',$club_name)->count();
+        if($hostperson > 0) {
+            return redirect()->back()->with('danger', ' You can not reserve a club that you already belong to');
         }
 
 

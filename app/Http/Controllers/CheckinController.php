@@ -112,6 +112,14 @@ class CheckinController extends Controller
 
             }
 
+            //check if guest is part of the same club
+            $checkguest = host::where('userid',$guest->userid)->where('location_id',$request->location_id)->count();
+
+            if ($checkguest > 0) {
+                return redirect()->back()->with('danger', $guest->userid. " is already in the $club_name");
+            }
+
+
 
 
             //no meals past 8:00pm or before 7am
@@ -127,11 +135,13 @@ class CheckinController extends Controller
 
             //check if user has enough meals
             $noOfMeals = Meal::where('puid',$guest->puid)->pluck('meal_remaining')->first();
-
-
             if($noOfMeals < 0 || $noOfMeals==null) {
                 return redirect()->back()->with('danger', 'Guest has used all meals for the week or is not on a meal plan, remaining: '.$noOfMeals);
             }
+
+
+
+
 
 
 
