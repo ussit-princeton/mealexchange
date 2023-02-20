@@ -108,7 +108,7 @@ class CheckinController extends Controller
             $duplicate = transaction::where("meal_date",$request_date)->where("mealperiod",$request->mealperiod)->where("guest_userid","=",$guest->userid)->count();
 
             if($duplicate > 0) {
-                return redirect()->back()->with('danger', "Guest already has already checked in for $request->mealperiod" );
+                return redirect()->back()->with('danger', "Guest already has checked in for $request->mealperiod" );
 
             }
 
@@ -116,7 +116,7 @@ class CheckinController extends Controller
             $checkguest = host::where('userid',$guest->userid)->where('location_id',$request->location_id)->count();
 
             if ($checkguest > 0) {
-                return redirect()->back()->with('danger', $guest->userid. " is already in the $club_name");
+                return redirect()->back()->with('danger', $guest->userid. " is already in $club_name");
             }
 
 
