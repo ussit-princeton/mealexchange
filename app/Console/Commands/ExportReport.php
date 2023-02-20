@@ -4,14 +4,16 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class OverLimitMeals extends Command
+use App\Exports\TransactionExport;
+
+class ExportReport extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'export:report';
 
     /**
      * The console command description.
@@ -27,6 +29,8 @@ class OverLimitMeals extends Command
      */
     public function handle()
     {
-        return Command::SUCCESS;
+        return \Excel::store(new TransactionExport,'reports/transactions.xlsx');
+
+
     }
 }
