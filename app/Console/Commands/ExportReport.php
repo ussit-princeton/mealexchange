@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-use App\Exports\TransactionExport;
+use App\Exports\ReportExport;
 
 class ExportReport extends Command
 {
@@ -29,7 +29,7 @@ class ExportReport extends Command
      */
     public function handle()
     {
-        return \Excel::store(new TransactionExport,'reports/transactions.xlsx');
+        return \Excel::store(new ReportExport,'reports/transactions.csv');
 
 
     }
