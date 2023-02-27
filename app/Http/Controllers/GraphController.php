@@ -59,8 +59,10 @@ class GraphController extends Controller
 
         $total_transactions = transaction::all();
 
+        $participants = \DB::table('transactions')->distinct('guest_userid')->count('user_id');
 
-        return view('graph.index')->with('clubs',$clubs)->with('breakfast',$breakfast)->with('lunch',$lunch)->with('dinner',$dinner)->with('total_transactions',$total_transactions);
+
+        return view('graph.index')->with('clubs',$clubs)->with('breakfast',$breakfast)->with('lunch',$lunch)->with('dinner',$dinner)->with('total_transactions',$total_transactions)->with('participants',$participants);
         //
     }
 

@@ -70,16 +70,18 @@ class CheckinController extends Controller
 
             }
 
+
             $hostname = $request->host;
             $guestname = $request->guest;
-            $club_name = $request->location_name;
+            $club_name = $request->location_id;
+
 
             #check host belonging to the club
             $host = host::where(function ($query) use ($hostname) {
                 return $query->where('userid', '=', $hostname)
                     ->orWhere('email', '=', $hostname);
             })->where(function ($query) use ($club_name) {
-                return $query->where('clubname', '=', $club_name);
+                return $query->where('location_id', '=', $club_name);
             })->first();
 
 
@@ -88,6 +90,7 @@ class CheckinController extends Controller
                 return $query->where('userid', '=', $guestname)
                     ->orWhere('email', '=', $guestname);
             })->first();
+            
 
 
 
@@ -95,10 +98,10 @@ class CheckinController extends Controller
 
             //Error Checking
             if ($guest == null) {
-                return redirect()->back()->with('danger', "No guest $guestname was found for $club_name");
+                return redirect()->back()->with('danger', "No guest $guestname was found for $request->location_name");
             }
             if ($host == null) {
-                return redirect()->back()->with('danger', "No host $hostname was found for $club_name");
+                return redirect()->back()->with('danger', "No host $hostname was found for $request->location_name");
             }
             if ($guest->userid == $host->userid) {
                 return redirect()->back()->with('danger', "Guest and Host can not be the same");
@@ -129,7 +132,7 @@ class CheckinController extends Controller
 
 
             if($now > $end || $now < $start) {
-                return redirect()->back()->with('danger', 'Check in is not available at this time');
+                return redirect()->back()->with('danger', 'Check in is not available at this time, it ends at 8pm');
 
             }
 
@@ -207,7 +210,7 @@ class CheckinController extends Controller
 
             \Mail::raw("$transaction->guest_name has checked in with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.", function($message) use($transaction)
             {
-                $message->from('jk20@princeton.edu');
+                $message->from('clubmeal@princeton.edu');
                 $message->to([$transaction->guest_userid."@princeton.edu", $transaction->host_userid."@princeton.edu"]);
                 $message->subject('Club Checkin @ '.$transaction->location_name);
             });
@@ -240,6 +243,7 @@ class CheckinController extends Controller
             $current_week = \Carbon\Carbon::now()->weekOfYear;
 
             $location = location::where('id', $id)->first();
+
 
             $today = \Carbon\Carbon::now()->format('Y-m-d');
 
@@ -282,6 +286,8 @@ class CheckinController extends Controller
 
 
             $meals_remaining = Meal::where('puid',\Auth::user()->puid)->first();
+
+
 
             return view('checkin.show')->with('transactions', $transactions)->with('current_week', $current_week)->with(
                 'location',
@@ -326,7 +332,7 @@ class CheckinController extends Controller
 
         \Mail::raw("Dear $transaction->guest_name ".\Auth::user()->name. " has approved your meal with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.".PHP_EOL. $location->email_message , function($message) use($transaction)
         {
-            $message->from('jk20@princeton.edu');
+            $message->from('clubmeal@princeton.edu');
             $message->to([$transaction->guest_userid."@princeton.edu", $transaction->host_userid."@princeton.edu"]);
             $message->subject('Club Checkin @ '.$transaction->location_name);
         });

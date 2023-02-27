@@ -161,20 +161,33 @@ class CapacityController extends Controller
     public function destroy($id)
     {
         $capacity = capacity::find($id);
-        $location_id = $capacity->location_id;
 
-        if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$location_id) {
 
-            $capacity = capacity::find($id);
-            $capacity->delete();
+        if ($capacity != null) {
 
-            return redirect()->back()->with('danger', 'Day was removed');
-            //
+            $location_id = $capacity->location_id;
+
+
+            if (\Auth::user()->group=='admin' or \Auth::user()->location_id==$location_id) {
+
+                $capacity = capacity::find($id);
+                $capacity->delete();
+
+                return redirect()->back()->with('danger', 'Day was removed');
+                //
+            }
+
+            else {
+                abort(403);
+            }
+
         }
-
         else {
-            abort(403);
+
+            return redirect()->back()->with('danger', 'Nothing to remove');
         }
+
+
 
     }
 }

@@ -197,7 +197,7 @@ class ReservationController extends Controller
         //check dates are within range and include blackout dates
         $alloweddates = location::find($id);
         $startdate = \Carbon\Carbon::now()->addDays($alloweddates->min_date -1);
-        $endate = \Carbon\Carbon::now()->addDays($alloweddates->max_date);
+        $endate = \Carbon\Carbon::now()->addDays($alloweddates->max_date +1);
         $blackoutdates = Closedate::where('location_id', $id)->get();
         $min_date = $alloweddates->min_date;
 
@@ -251,36 +251,34 @@ class ReservationController extends Controller
         $transaction->approved = 0;
         $transaction->status = 'Pending';
 
-        $transaction->save();
+       $transaction->save();
 
 
 
 
         //email host
         \Mail::raw("$transaction->guest_name has requested for approval to $transaction->host_name at $transaction->location_name for $transaction->mealperiod on ". substr($transaction->meal_date,0,10)."."
-        .PHP_EOL."Please click on the link https://clubmeal.cpaneldev.princeton.edu/approval/$transaction->id/edit for approval. You have until " . \Carbon\Carbon::parse($transaction->meal_date)->subDays($min_date)->format('Y-m-d'). " to approve or the reservation will be removed.", function($message) use($transaction)
+        .PHP_EOL."Please click on the link https://diningpilotapp.princeton.edu/approval/$transaction->id/edit for approval. You have until " . \Carbon\Carbon::parse($transaction->meal_date)->subDays($min_date)->format('Y-m-d'). " to approve or the reservation will be removed.", function($message) use($transaction)
         {
-            $message->from('jk20@princeton.edu');
+            $message->from('clubmeal@princeton.edu');
             $message->to($transaction->host_userid."@princeton.edu");
             $message->subject('Reservation approval @ '.$transaction->location_name);
         });
 
         $location = location::find($transaction->location_id);
 
-        //email admin
+        //email checkers of the location
+      $admin_users = User::where('location_id',$transaction->location_id)->whereIn('group',['checker','both'])->pluck('email')->toArray();
 
-        $admin_users = User::where('location_id',$transaction->location_id)->where('group','=','admin')->pluck('userid');
-
-
-     /*   if(!count($admin_users) ==0 ) {
+        if(!count($admin_users) ==0 ) {
             \Mail::raw("$transaction->guest_name has requested $transaction->mealperiod on ". substr($transaction->meal_date,0,10).".", function($message) use($transaction,$admin_users)
             {
-                $message->from('jk20@princeton.edu');
+                $message->from('clubmeal@princeton.edu');
                 $message->to($admin_users);
                 $message->subject('Reservation request @ '.$transaction->location_name);
             });
 
-        } */
+        }
 
 
 
@@ -289,7 +287,7 @@ class ReservationController extends Controller
             \Mail::raw("Your reservation has been sent to $transaction->host_name to dine at $transaction->location_name for $transaction->mealperiod on ". substr($transaction->meal_date,0,10)."."
                 .PHP_EOL.PHP_EOL, function($message) use($transaction)
             {
-                $message->from('jk20@princeton.edu');
+                $message->from('clubmeal@princeton.edu');
                 $message->to($transaction->guest_userid."@princeton.edu");
                 $message->subject('Reservation Pending @ '.$transaction->location_name);
             });
@@ -337,7 +335,7 @@ class ReservationController extends Controller
 
         \Mail::raw("$transaction->guest_name has cancelled the reservation with $transaction->host_name at $transaction->location_name for $transaction->mealperiod on $transaction->meal_date.", function($message) use($transaction)
         {
-            $message->from('jk20@princeton.edu');
+            $message->from('clubmeal@princeton.edu');
             $message->to([$transaction->host_userid."@princeton.edu", $transaction->guest_userid."@princeton.edu"]);
             $message->subject('Reservation Cancelled @ '.$transaction->location_name);
         });

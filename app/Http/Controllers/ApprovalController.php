@@ -114,7 +114,7 @@ class ApprovalController extends Controller
                 .PHP_EOL. $message->email_message
                 , function($message) use($transaction)
             {
-                $message->from('jk20@princeton.edu');
+                $message->from('clubmeal@princeton.edu');
                 $message->to([$transaction->host_userid."@princeton.edu", $transaction->guest_userid."@princeton.edu"]);
                 $message->subject('Reservation Approved @ '.$transaction->location_name);
             });

@@ -65,7 +65,7 @@ return [
     |--------------------------------------------------------------------------
     | Example: 'http://localhost', 'https://example.com:8888'
     */
-    'cas_client_service' => env('CAS_CLIENT_SERVICE', 'https://clubmeal.cpaneldev.princeton.edu'),
+    'cas_client_service' => env('CAS_CLIENT_SERVICE', 'https://diningpilotapp.princeton.edu'),
 
 
     /*

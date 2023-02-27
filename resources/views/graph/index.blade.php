@@ -125,11 +125,11 @@
     </script>
 
     <script>
-        var xValues = ["Participation", "Non Participant"];
-        var yValues = [50,200];
+        var xValues = ["Participant", "Non Participant"];
+        var yValues = [{!! json_encode($participants) !!},300];
         var barColors = [
-            "#b91d47",
-            "#00aba9"
+            "green",
+            "red"
 
         ];
 

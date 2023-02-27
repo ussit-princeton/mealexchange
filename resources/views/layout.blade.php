@@ -12,14 +12,14 @@
 
     <!-- Bootstrap core CSS -->
 
-    <link href="https://lunchtogo.deptcpanel.princeton.edu/styles/bootstrap.min.css"  rel="stylesheet">
+    <link href="{{asset('styles/bootstrap.min.css')}}"  rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="https://lunchtogo.deptcpanel.princeton.edu/styles/carousel.css" rel="stylesheet">
-    <link href="https://lunchtogo.deptcpanel.princeton.edu/styles/bootstrap-datepicker.standalone.css" rel="stylesheet">
-    <link href="https://lunchtogo.deptcpanel.princeton.edu/styles/jquery.timepicker.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://lunchtogo.deptcpanel.princeton.edu/styles/bootstrap-select.css">
-    <link rel="stylesheet" href="https://lunchtogo.deptcpanel.princeton.edu/styles/jquery.dataTables.min.css">
+    <link href="{{asset('styles/carousel.css')}}" rel="stylesheet">
+    <link href="{{asset('styles/bootstrap-datepicker.standalone.css')}}" rel="stylesheet">
+    <link href="{{asset('styles/jquery.timepicker.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('styles/bootstrap-select.css')}}">
+    <link rel="stylesheet" href="{{asset('styles/jquery.dataTables.min.css')}}">
     <!-- link rel="stylesheet" href="//asset('styles/jquery.datatable-responsive.min.css'" -->
 
 

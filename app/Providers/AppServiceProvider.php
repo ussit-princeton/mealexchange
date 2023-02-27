@@ -35,8 +35,9 @@ class AppServiceProvider extends ServiceProvider
             return $user->group=='admin';
         });
 
+
         Gate::define('checker', function($user) {
-            return $user->group=='checker';
+            return $user->group=='checker' or $user->group=='both';
         });
 
         Gate::define('checkeronly', function($user) {
@@ -45,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
 
 
         Gate::define('user', function($user) {
-            return $user->group=='user';
+            return $user->group=='user' or $user->group=='both';
         });
         //
     }
